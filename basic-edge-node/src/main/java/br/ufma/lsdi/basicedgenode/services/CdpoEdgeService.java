@@ -1,10 +1,8 @@
 package br.ufma.lsdi.basicedgenode.services;
 
 import com.espertech.esper.client.EPStatement;
-import com.espertech.esper.client.EventType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 import org.springframework.beans.factory.annotation.Value;
@@ -145,13 +143,13 @@ public class CdpoEdgeService {
             // ... inclui o insert antes da regra para gerar os novos eventos
             String insertEPL = "insert into " + name + " " + definition;
 
-            // adiciona a regra
+            // adiciona a regra para processamento local
             cepService.addRule(insertEPL, name);
         }
         else {
             if (target.equals("fog")) {
 
-                // adiciona a regra
+                // adiciona a regra para processamento na fog (via o listener)
                 EPStatement stm = cepService.addRule(definition, name);
 
                 // ... se subscreve no statement para receber os eventos gerados pela regra de insert...
@@ -176,6 +174,9 @@ public class CdpoEdgeService {
 
     }
 
+    /*
+    Adciona os event types da regra.
+     */
     private void addEventTypes(Map<String, Object> rule) {
         List<Map<String, Object>> eventTypes = (List) rule.get("eventTypes");
         eventTypes.forEach(eventType -> {

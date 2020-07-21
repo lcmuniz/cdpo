@@ -3,19 +3,16 @@ package br.ufma.lsdi.basicfognode.controls;
 import br.ufma.lsdi.basicfognode.services.CdpoFogService;
 import br.ufma.lsdi.basicfognode.services.CepService;
 import com.espertech.esper.client.EPStatement;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 @RestController
 public class CdpoFogController {
@@ -27,7 +24,9 @@ public class CdpoFogController {
         this.cepService = cepService;
         this.cdpoFogService = cdpoFogService;
     }
-
+    /*
+    Adiciona uma regra ao serviço de Cep para processamento.
+     */
     @PostMapping("rule")
     public Map addRule(@RequestBody Map<String, Object> rule) {
 
@@ -42,14 +41,23 @@ public class CdpoFogController {
         else if (level.equals("cloud")) {
             sendToCloud(rule);
         }
+        else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid Rule Level");
+        }
 
         return rule;
     }
 
+    /*
+    Trata as regras que devem ser processadas na cloud
+     */
     private void sendToCloud(Map<String, Object> rule) {
 
     }
 
+    /*
+    Trata as regras processadas na fog
+     */
     private void processInFog(Map<String, Object> rule) {
         String definition = (String) rule.get("definition");
         String name = (String) rule.get("name");
@@ -59,13 +67,15 @@ public class CdpoFogController {
 
         addEventTypes(rule);
 
+        // se o resultado da regra deve ser enviada a fog...
         if (target.equals("fog")) {
             // insere os eventos com o nome da regra para que
             // o fog possa processar localmente
             String insertRule = "insert into " + name + " " + rule.get("definition");
             cepService.addRule(insertRule, name);
         }
-        else {
+        else if (target.equals("cloud")) {
+            // se o resultado da regra deve ser enviada à cloud ...
             // adiciona a regra no CepService e o listener associado
             // que envia os resultados para a forwardUrl (cloud)
             EPStatement stm = cepService.addRule(definition, name);
@@ -79,8 +89,15 @@ public class CdpoFogController {
                 });
             }
         }
+        else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid Rule Target");
+        }
+
     }
 
+    /*
+    Adiciona os event types ao serviço Cep
+     */
     private void addEventTypes(Map<String, Object> rule) {
         List<Map<String, Object>> eventTypes = (List) rule.get("eventTypes");
         eventTypes.forEach(eventType -> {

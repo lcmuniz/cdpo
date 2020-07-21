@@ -7,7 +7,6 @@ import com.espertech.esper.client.EventType;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
-import java.util.Properties;
 
 /*
 Serviço de CEP

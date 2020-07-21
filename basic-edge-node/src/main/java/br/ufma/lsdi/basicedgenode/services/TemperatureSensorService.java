@@ -25,21 +25,26 @@ public class TemperatureSensorService {
         cepService.addEventType("TemperatureG", new Properties());
 
         Map props = new HashMap<>();
-        props.put("id", Integer.class);
         props.put("value", Integer.class);
         cepService.addEventType("TemperatureH", props);
 
+        // testa processamento de eventos localmente
+        // 1 - processa temperatura (criada localmente)
         EPStatement stm = cepService.addRule("select * from Temperature", "Temperature");
         stm.addListener((eventBeans, eventBeans1) -> {
             Map temperature = (Map) eventBeans[0].getUnderlying();
             System.out.println(">>>" + temperature);
         });
 
+        // 2 - processa temperatura h (criada por regra enviada pelo fog)
         EPStatement stm2 = cepService.addRule("select * from TemperatureH where value >= 35 or value <= 25", "TemperatureG");
         stm2.addListener((eventBeans, eventBeans1) -> {
             Map temperatureH = (Map) eventBeans[0].getUnderlying();
             System.out.println("+++++" + temperatureH);
         });
+
+
+        // gera temperaturas e envia para o cep service
 
         int temperature = 30;
         int id = 1;
