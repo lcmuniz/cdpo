@@ -1,18 +1,17 @@
 package br.ufma.lsdi.basicedgenode.services;
 
 import com.espertech.esper.client.EPStatement;
+import com.espertech.esper.client.EventType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 /*
 Esta classe é responsável por toda a comunicação com o CDPO
@@ -134,36 +133,71 @@ public class CdpoEdgeService {
      */
     public void addEdgeRule(Map<String, Object> rule) {
 
-        // ... inclui o insert antes da regra para gerar os novos eventos
-        String insertEPL = "insert into " + rule.get("name") + " " + rule.get("definition");
+        String target = (String) rule.get("target");
+        String definition = (String) rule.get("definition");
+        String name = (String) rule.get("name");
+        String ruuid = (String) rule.get("uuid");
 
-        // adiciona a regra
-        cepService.addRule(insertEPL);
+        addEventTypes(rule);
 
-        // se a regra for para voltar para a fog ...
-        if ((Boolean) rule.get("forwardToFog")) {
 
-            // adiciona a regra para selecionar os novos eventos gerados pelo insert
-            String selectEPL = "select * from " + rule.get("name");
-            EPStatement stm = cepService.addRule(selectEPL);
+        if (target.equals("edge")) {
+            // ... inclui o insert antes da regra para gerar os novos eventos
+            String insertEPL = "insert into " + name + " " + definition;
 
-            // ... se subscreve no statement para receber os eventos gerados pela regra de insert...
-            stm.addListener((eventBeans, eventBeans1) -> {
-                // o listener executa em uma thread separada para não bloquear a aplicação
-                new Thread(() -> {
-                    Object object = eventBeans[0].getUnderlying();
+            // adiciona a regra
+            cepService.addRule(insertEPL, name);
+        }
+        else {
+            if (target.equals("fog")) {
+
+                // adiciona a regra
+                EPStatement stm = cepService.addRule(definition, name);
+
+                // ... se subscreve no statement para receber os eventos gerados pela regra de insert...
+                stm.addListener((eventBeans, eventBeans1) -> {
+                    // o listener executa em uma thread separada para não bloquear a aplicação
+                    new Thread(() -> {
+                        Map object = (Map) eventBeans[0].getUnderlying();
+                        object.put("eventType", name);
+                        try {
+                            ObjectMapper mapper = new ObjectMapper();
+                            String topic = CDPO_EDGE_EVENT + clientUuid + "/" + ruuid;
+                            // envia os eventos do Cep para o cdpo via MQTT
+                            publish(topic, mapper.writeValueAsBytes(object));
+                        } catch (JsonProcessingException e) {
+                            e.printStackTrace();
+                        }
+                    }).start();
+                });
+
+            }
+        }
+
+    }
+
+    private void addEventTypes(Map<String, Object> rule) {
+        List<Map<String, Object>> eventTypes = (List) rule.get("eventTypes");
+        eventTypes.forEach(eventType -> {
+
+            String eventTypeName = (String) eventType.get("name");
+
+            List<Map<String, String>> attributes = (List) eventType.get("attributes");
+            Map map = new HashMap();
+            if (attributes != null) {
+                attributes.forEach(attribute -> {
                     try {
-                        ObjectMapper mapper = new ObjectMapper();
-                        String topic = CDPO_EDGE_EVENT + clientUuid + "/" + rule.get("uuid");
-                        // envia os eventos do Cep para o cdpo via MQTT
-                        publish(topic, mapper.writeValueAsBytes(object));
-                    } catch (JsonProcessingException e) {
+                        Class clazz = Class.forName(attribute.get("type"));
+                        map.put(attribute.get("name"), clazz);
+                    } catch (ClassNotFoundException e) {
                         e.printStackTrace();
                     }
-                }).start();
-            });
+                });
+            }
 
-        }
+            cepService.addEventType(eventTypeName, map);
+
+        });
     }
 
     /*

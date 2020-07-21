@@ -1,9 +1,9 @@
 package br.ufma.lsdi.basicedgenode.services;
 
-import br.ufma.lsdi.basicedgenode.models.Temperature;
 import com.espertech.esper.client.EPStatement;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
@@ -21,20 +21,21 @@ public class TemperatureSensorService {
      */
     public TemperatureSensorService(CepService cepService) throws InterruptedException {
 
-        cepService.addEventType("Temperature", Temperature.class);
+        cepService.addEventType("Temperature", new Properties());
+        cepService.addEventType("TemperatureG", new Properties());
 
-        Properties props = new Properties();
-        props.setProperty("id", "java.lang.Integer");
-        props.setProperty("value", "java.lang.Integer");
+        Map props = new HashMap<>();
+        props.put("id", Integer.class);
+        props.put("value", Integer.class);
         cepService.addEventType("TemperatureH", props);
 
-        EPStatement stm = cepService.addRule("select * from Temperature");
+        EPStatement stm = cepService.addRule("select * from Temperature", "Temperature");
         stm.addListener((eventBeans, eventBeans1) -> {
-            Temperature temperature = (Temperature) eventBeans[0].getUnderlying();
+            Map temperature = (Map) eventBeans[0].getUnderlying();
             System.out.println(">>>" + temperature);
         });
 
-        EPStatement stm2 = cepService.addRule("select * from TemperatureH where value >= 35 or value <= 25");
+        EPStatement stm2 = cepService.addRule("select * from TemperatureH where value >= 35 or value <= 25", "TemperatureG");
         stm2.addListener((eventBeans, eventBeans1) -> {
             Map temperatureH = (Map) eventBeans[0].getUnderlying();
             System.out.println("+++++" + temperatureH);
@@ -58,7 +59,10 @@ public class TemperatureSensorService {
             }
 
             // envia a temperatura para o serviço de Cep
-            cepService.send(new Temperature(id, temperature));
+            Map temp = new HashMap();
+            temp.put("id", id);
+            temp.put("value", temperature);
+            cepService.send(temp, "Temperature");
 
             id++;
 

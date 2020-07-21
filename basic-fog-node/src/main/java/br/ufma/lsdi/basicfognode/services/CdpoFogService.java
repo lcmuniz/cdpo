@@ -1,14 +1,9 @@
 package br.ufma.lsdi.basicfognode.services;
 
-import com.espertech.esper.client.EPServiceProvider;
-import com.espertech.esper.client.EPServiceProviderManager;
-import com.espertech.esper.client.EPStatement;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -51,6 +46,9 @@ public class CdpoFogService {
     @Value("${cdpo.iotcataloguer.url}")
     private String iotCataloguerUrl;
 
+    @Value("${cdpo.tagger.url}")
+    private String taggerUrl;
+
     private final CepService cepService;
     private MqttClient mqttClient;
 
@@ -85,7 +83,6 @@ public class CdpoFogService {
 
     /*
     Inicializa o cliente MQTT.
-    Subscreve-se no tópico cdpo/edge-rule para receber as regras do cdpo
      */
     private void initMqtt() {
         MqttConnectOptions mqttOpts = new MqttConnectOptions();
@@ -99,36 +96,6 @@ public class CdpoFogService {
         try{
             mqttClient = new MqttClient(brokerUrl, dn, dataStore);
             mqttClient.connect(mqttOpts);
-
-            // subscreve o tóico /cdepo/edRule para receber regras do cdpo
-            String topic = CDPO_EDGE_RULE + dn;
-            mqttClient.subscribe(topic, (s, mqttMessage) -> {
-                // o callback executa em uma thread separada para não bloquear a aplicação
-                new Thread(() -> {
-                    // testa se a mensagem é do tópico cdpo/edgeRule.
-                    // tecnicamente não é necessário pois este é o unico tópico
-                    // no qual esse serviço se inscreve (mas isso pode mudar no futuro).
-                    if (topic.contains(CDPO_EDGE_RULE)) {
-                        try {
-                            // recebe a regra
-                            String payload = new String(mqttMessage.getPayload());
-                            ObjectMapper mapper = new ObjectMapper();
-                            Map edgeRule = mapper.readValue(payload, Map.class);
-                            // adiciona à engine Cep
-                            addEdgeRule(edgeRule);
-
-                            // publica o status do deploy para o cdpo
-                            Map map2 = new HashMap();
-                            map2.put("status", "deployed");
-                            byte[] resp = mapper.writeValueAsBytes(map2);
-                            publish(CDPO_DEPLOY_STATUS + dn + "/" + edgeRule.get("uuid"), resp);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                }).start();
-            });
 
         } catch (MqttException e){
             e.printStackTrace();
@@ -145,8 +112,9 @@ public class CdpoFogService {
                     // recebeu um evento do edge. envia para o Cep processar
                     try {
                         ObjectMapper mapper = new ObjectMapper();
-                        Object event = mapper.readValue(mqttMessage.getPayload(), Object.class);
-                        cepService.send(event);
+                        Map event = mapper.readValue(mqttMessage.getPayload(), Map.class);
+                        String eventType = (String) event.get("eventType");
+                        cepService.send(event, eventType);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -164,7 +132,7 @@ public class CdpoFogService {
 
                     // envia o status do deploy para o cdpo
                     RestTemplate restTemplate = new RestTemplate();
-                    restTemplate.postForObject(cdpoUrl+EPN_DEPLOY_STATUS, deployStatus, Map.class);
+                    // TODO: restTemplate.postForObject(cdpoUrl+EPN_DEPLOY_STATUS, deployStatus, Map.class);
                 }).start();
             });
             mqttClient.subscribe(EDGE_KEEP_ALIVE_TOPIC, (topic, mqttMessage) -> {
@@ -184,41 +152,22 @@ public class CdpoFogService {
     }
 
     /*
-    Adciona uma EdgeRule recebida  do cdpo à engine Cep.
+    Envia uma regra para a edge
      */
-    public void addEdgeRule(Map<String, Object> rule) {
+    public void sendRuleToEdge(Map<String, Object> rule) {
 
-        // ... inclui o insert antes da regra para gerar os novos eventos
-        String insertEPL = "insert into " + rule.get("name") + " " + rule.get("definition");
+        List<String> edges = (List) rule.get("edgeUuids");
 
-        // adiciona a regra
-        cepService.addRule(insertEPL);
-
-        // se a regra for para voltar para a fog ...
-        if ((Boolean) rule.get("forwardToFog")) {
-
-            // adiciona a regra para selecionar os novos eventos gerados pelo insert
-            String selectEPL = "select * from " + rule.get("name");
-            EPStatement stm = cepService.addRule(selectEPL);
-
-            // ... se subscreve no statement para receber os eventos gerados pela regra de insert...
-            stm.addListener((eventBeans, eventBeans1) -> {
-                // o listener executa em uma thread separada para não bloquear a aplicação
-                new Thread(() -> {
-                    Object object = eventBeans[0].getUnderlying();
-                    try {
-                        ObjectMapper mapper = new ObjectMapper();
-                        String topic = CDPO_EDGE_EVENT + dn + "/" + rule.get("uuid");
-
-                        // envia os eventos do Cep para o cdpo via MQTT
-                        publish(topic, mapper.writeValueAsBytes(object));
-                    } catch (JsonProcessingException e) {
-                        e.printStackTrace();
-                    }
-                }).start();
-            });
-
+        for (String edge : edges) {
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                byte[] payload = objectMapper.writeValueAsBytes(rule);
+                publish(CDPO_EDGE_RULE + edge, payload);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
         }
+
     }
 
     /*
@@ -241,7 +190,7 @@ public class CdpoFogService {
     /*
     Publica uma mensagem no serviço MQTT
      */
-    private void publish(String topic, byte[] payload) {
+    public void publish(String topic, byte[] payload) {
         try{
             MqttMessage message = new MqttMessage();
             message.setQos(0);
