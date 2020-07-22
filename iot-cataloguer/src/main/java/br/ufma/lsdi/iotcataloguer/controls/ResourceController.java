@@ -1,7 +1,7 @@
 package br.ufma.lsdi.iotcataloguer.controls;
 
-import br.ufma.lsdi.iotcataloguer.models.GatewayResource;
-import br.ufma.lsdi.iotcataloguer.models.Resource;
+import br.ufma.lsdi.cdpo.GatewayResource;
+import br.ufma.lsdi.cdpo.Resource;
 import br.ufma.lsdi.iotcataloguer.repos.GatewayResourceRepository;
 import br.ufma.lsdi.iotcataloguer.repos.ResourceRepository;
 import lombok.AllArgsConstructor;
@@ -63,29 +63,12 @@ public class ResourceController {
     }
 
     @GetMapping("/{uuid}/gateways")
-    public List<GatewayResponse> getGateways(@PathVariable("uuid") String uuid) {
+    public List<GatewayResource> getGateways(@PathVariable("uuid") String uuid) {
         return getGatewaysByResource(uuid);
     }
 
-    private List<GatewayResponse> getGatewaysByResource(String uuid) {
-        List<GatewayResource> grs = grRepo.findAllByResource_Uuid(uuid);
-        return grs.stream().map(gr -> new GatewayResponse(
-                gr.getGateway().getDn(),
-                gr.getGateway().getUrl(),
-                gr.getGateway().getLat(),
-                gr.getGateway().getLon(),
-                gr.getTimestamp()
-        )).collect(Collectors.toList());
+    private List<GatewayResource> getGatewaysByResource(String uuid) {
+        return grRepo.findAllByResource_Uuid(uuid);
     }
 
-}
-
-@Data
-@AllArgsConstructor
-class GatewayResponse {
-    private String dn;
-    private String url;
-    private Double lat;
-    private Double lon;
-    private LocalDateTime timestamp;
 }

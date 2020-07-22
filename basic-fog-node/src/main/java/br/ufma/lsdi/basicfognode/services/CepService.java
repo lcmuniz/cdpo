@@ -28,13 +28,47 @@ public class CepService {
     /*
     Adciona um tipo de evento para ser reconhecido pelo engine Cep
      */
-    public void addEventType(String eventType, Map properties) {
-        EventType et = engine.getEPAdministrator().getConfiguration().getEventType(eventType);
+    public void addEventType(String eventTypeName) {
+        br.ufma.lsdi.cdpo.EventType et = new br.ufma.lsdi.cdpo.EventType();
+        et.setName(eventTypeName);
+        et.setAttributes(null);
+        addEventType(et);
+    }
+
+    /*
+    Adciona um tipo de evento e seus atributos para ser reconhecido pelo engine Cep
+     */
+    public void addEventType(br.ufma.lsdi.cdpo.EventType eventType) {
+
+        // coloca todos as atributos em um map
+        // para passar para o engine cep
+        Map map = new HashMap();
+        if (eventType.getAttributes() != null) {
+            eventType.getAttributes().forEach(attribute -> {
+                try {
+                    Class clazz = Class.forName(attribute.getType());
+                    map.put(attribute.getName(), clazz);
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+
+        addEventType(eventType.getName(), map);
+
+    }
+
+    /*
+    Adciona um tipo de evento e seus atributos para ser reconhecido pelo engine Cep
+     */
+    public void addEventType(String eventTypeName, Map attributesMap) {
+
+        EventType et = engine.getEPAdministrator().getConfiguration().getEventType(eventTypeName);
         if (et == null) {
-            engine.getEPAdministrator().getConfiguration().addEventType(eventType, properties);
+            engine.getEPAdministrator().getConfiguration().addEventType(eventTypeName, attributesMap);
         }
         else {
-            engine.getEPAdministrator().getConfiguration().updateMapEventType(eventType, properties);
+            engine.getEPAdministrator().getConfiguration().updateMapEventType(eventTypeName, attributesMap);
         }
     }
 

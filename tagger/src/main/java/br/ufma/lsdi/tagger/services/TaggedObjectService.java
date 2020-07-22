@@ -1,6 +1,7 @@
 package br.ufma.lsdi.tagger.services;
 
-import br.ufma.lsdi.tagger.models.TaggedObject;
+import br.ufma.lsdi.cdpo.TaggedObject;
+import br.ufma.lsdi.cdpo.TaggedObjectFilter;
 import br.ufma.lsdi.tagger.parsers.ParserExpression;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.BasicQuery;
@@ -8,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /*
 Classe de serviço com métodos para buscas
@@ -28,21 +28,22 @@ public class TaggedObjectService {
     A requisição pode fornecer um type e uma expression para serem
     utilizadas como parâmetros de busca.
      */
-    public List<TaggedObject> find(Map query) {
+    public List<TaggedObject> find(TaggedObjectFilter filter) {
         List exps = new ArrayList();
-        if (query.get("type") != null) {
-            String type = "'objectType.type': '" + query.get("type").toString() + "'";
+        if (filter.getObjectType() != null) {
+            String type = "'objectType.type': '" + filter.getObjectType().getType() + "'";
             exps.add(type);
         }
-        if (query.get("expression") != null) {
+        if (filter.getExpression() != null) {
             // faz o parse da expressão para o formato do MongoDB.
-            String expression = ParserExpression.parse(query.get("expression").toString());
+            String expression = ParserExpression.parse(filter.getExpression());
             exps.add(expression);
         }
 
         String exp = "{"+String.join(",", exps)+"}";
 
         BasicQuery _query = new BasicQuery(exp);
-        return template.find(_query, TaggedObject.class);
+        List<TaggedObject> obs = template.find(_query, TaggedObject.class);
+        return obs;
     }
 }

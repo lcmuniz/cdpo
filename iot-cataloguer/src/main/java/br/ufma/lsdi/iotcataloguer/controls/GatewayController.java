@@ -1,23 +1,19 @@
 package br.ufma.lsdi.iotcataloguer.controls;
 
-import br.ufma.lsdi.iotcataloguer.models.Gateway;
-import br.ufma.lsdi.iotcataloguer.models.GatewayResource;
-import br.ufma.lsdi.iotcataloguer.models.Resource;
+import br.ufma.lsdi.cdpo.Gateway;
+import br.ufma.lsdi.cdpo.GatewayResource;
+import br.ufma.lsdi.cdpo.Resource;
 import br.ufma.lsdi.iotcataloguer.repos.GatewayRepository;
 import br.ufma.lsdi.iotcataloguer.repos.GatewayResourceRepository;
 import br.ufma.lsdi.iotcataloguer.repos.ResourceRepository;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("gateway")
@@ -57,6 +53,7 @@ public class GatewayController {
         }
         else {
             g = new Gateway();
+            g.setUuid(UUID.randomUUID().toString());
             g.setDn(gateway.getDn());
         }
         if (gateway.getLat() != null) g.setLat(gateway.getLat());
@@ -67,17 +64,12 @@ public class GatewayController {
     }
 
     @GetMapping("resources")
-    public List<ResourceResponse> getResources(@RequestHeader("${iotcataloguer.dnattribute}") String dn) {
+    public List<GatewayResource> getResources(@RequestHeader("${iotcataloguer.dnattribute}") String dn) {
         return getResourcesByGateway(dn);
     }
 
     @PostMapping("relate")
-    public GatewayResource relate(@RequestBody Map<String, Object> request, @RequestHeader("${iotcataloguer.dnattribute}") String dn) {
-
-        String resourceUuid = (String) request.get("uuid");
-        String resourceName = (String) request.get("name");
-        Double resoureLat = (Double) request.get("lat");
-        Double resourceLon = (Double) request.get("lon");
+    public GatewayResource relate(@RequestBody Resource resource, @RequestHeader("${iotcataloguer.dnattribute}") String dn) {
 
         Optional<Gateway> optg = gRepo.findByDn(dn);
         if (!optg.isPresent()) {
@@ -85,18 +77,6 @@ public class GatewayController {
         }
         Gateway gateway = optg.get();
 
-        Optional<Resource> optr = rRepo.findById(resourceUuid);
-        Resource resource;
-        if (optr.isPresent()) {
-            resource = optr.get();
-        }
-        else {
-            resource = new Resource();
-            resource.setUuid(resourceUuid);
-        }
-        resource.setName(resourceName);
-        resource.setLat(resoureLat);
-        resource.setLon(resourceLon);
         rRepo.save(resource);
 
         GatewayResource gatewayResource = new GatewayResource();
@@ -109,25 +89,8 @@ public class GatewayController {
         return gatewayResource;
     }
 
-    private List<ResourceResponse> getResourcesByGateway(String dn) {
-        List<GatewayResource> grs = grRepo.findAllByGateway_Dn(dn);
-        return grs.stream().map(gr -> new ResourceResponse(
-                gr.getResource().getUuid(),
-                gr.getResource().getName(),
-                gr.getResource().getLat(),
-                gr.getResource().getLon(),
-                gr.getTimestamp()
-        )).collect(Collectors.toList());
+    private List<GatewayResource> getResourcesByGateway(String dn) {
+        return grRepo.findAllByGateway_Dn(dn);
     }
 
-}
-
-@Data
-@AllArgsConstructor
-class ResourceResponse {
-    private String uuid;
-    private String name;
-    private Double lat;
-    private Double lon;
-    private LocalDateTime timestamp;
 }

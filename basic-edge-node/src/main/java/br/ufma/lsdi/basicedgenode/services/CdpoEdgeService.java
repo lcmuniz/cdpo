@@ -1,10 +1,16 @@
 package br.ufma.lsdi.basicedgenode.services;
 
+import br.ufma.lsdi.cdpo.EventType;
+import br.ufma.lsdi.cdpo.Level;
+import br.ufma.lsdi.cdpo.Resource;
+import br.ufma.lsdi.cdpo.Rule;
 import com.espertech.esper.client.EPStatement;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +41,8 @@ public class CdpoEdgeService {
     private final CepService cepService;
     private MqttClient mqttClient;
 
+    private final Logger logger = LoggerFactory.getLogger(CdpoEdgeService.class);
+
     public CdpoEdgeService(CepService cepService) {
         this.cepService = cepService;
     }
@@ -53,11 +61,11 @@ public class CdpoEdgeService {
      */
     private void initKeepAliveTask() {
 
-        Map map = new HashMap<>();
-        map.put("uuid", clientUuid);
-        map.put("name", edgeName);
-        map.put("lat", 10.0);  // esses valores de lat e lon devem vir de um serviço de localização
-        map.put("lon", 20.0);
+        Resource resource = new Resource();
+        resource.setUuid(clientUuid);
+        resource.setName(edgeName);
+        resource.setLat(30.0);  // esses valores de lat e lon devem vir de um serviço de localização
+        resource.setLon(20.0);
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -65,8 +73,9 @@ public class CdpoEdgeService {
             @Override
             public void run() {
                 try {
-                    byte[] payload = mapper.writeValueAsBytes(map);
+                    byte[] payload = mapper.writeValueAsBytes(resource);
                     publish(EDGE_KEEP_ALIVE_TOPIC, payload);
+                    logger.debug(String.format("%s published to %s.", resource, EDGE_KEEP_ALIVE_TOPIC));
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }
@@ -104,13 +113,13 @@ public class CdpoEdgeService {
                             // recebe a regra
                             String payload = new String(mqttMessage.getPayload());
                             ObjectMapper mapper = new ObjectMapper();
-                            Map map = mapper.readValue(payload, Map.class);
+                            Rule rule = mapper.readValue(payload, Rule.class);
 
                             // adiciona à engine Cep
-                            addEdgeRule(map);
+                            addEdgeRule(rule);
 
                             // publica o status do deploy para o cdpo
-                            publish(CDPO_DEPLOY_STATUS + clientUuid + "/" + map.get("uuid"), "deployed".getBytes());
+                            publish(CDPO_DEPLOY_STATUS + clientUuid + "/" + rule.getUuid(), "deployed".getBytes());
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -129,38 +138,32 @@ public class CdpoEdgeService {
     Registra um listener para os eventos que devem ser enviados á fog
     O listener publica os eventos na fog
      */
-    public void addEdgeRule(Map<String, Object> rule) {
-
-        String target = (String) rule.get("target");
-        String definition = (String) rule.get("definition");
-        String name = (String) rule.get("name");
-        String ruuid = (String) rule.get("uuid");
+    public void addEdgeRule(Rule rule) {
 
         addEventTypes(rule);
 
-
-        if (target.equals("edge")) {
+        if (rule.getTarget().equals(Level.EDGE)) {
             // ... inclui o insert antes da regra para gerar os novos eventos
-            String insertEPL = "insert into " + name + " " + definition;
+            String insertEPL = "insert into " + rule.getName() + " " + rule.getDefinition();
 
             // adiciona a regra para processamento local
-            cepService.addRule(insertEPL, name);
+            cepService.addRule(insertEPL, rule.getName());
         }
         else {
-            if (target.equals("fog")) {
+            if (rule.getTarget().equals(Level.FOG)) {
 
                 // adiciona a regra para processamento na fog (via o listener)
-                EPStatement stm = cepService.addRule(definition, name);
+                EPStatement stm = cepService.addRule(rule.getDefinition(), rule.getName());
 
                 // ... se subscreve no statement para receber os eventos gerados pela regra de insert...
                 stm.addListener((eventBeans, eventBeans1) -> {
                     // o listener executa em uma thread separada para não bloquear a aplicação
                     new Thread(() -> {
                         Map object = (Map) eventBeans[0].getUnderlying();
-                        object.put("eventType", name);
+                        object.put("eventType", rule.getName());
                         try {
                             ObjectMapper mapper = new ObjectMapper();
-                            String topic = CDPO_EDGE_EVENT + clientUuid + "/" + ruuid;
+                            String topic = CDPO_EDGE_EVENT + clientUuid + "/" + rule.getUuid();
                             // envia os eventos do Cep para o cdpo via MQTT
                             publish(topic, mapper.writeValueAsBytes(object));
                         } catch (JsonProcessingException e) {
@@ -177,28 +180,9 @@ public class CdpoEdgeService {
     /*
     Adciona os event types da regra.
      */
-    private void addEventTypes(Map<String, Object> rule) {
-        List<Map<String, Object>> eventTypes = (List) rule.get("eventTypes");
-        eventTypes.forEach(eventType -> {
-
-            String eventTypeName = (String) eventType.get("name");
-
-            List<Map<String, String>> attributes = (List) eventType.get("attributes");
-            Map map = new HashMap();
-            if (attributes != null) {
-                attributes.forEach(attribute -> {
-                    try {
-                        Class clazz = Class.forName(attribute.get("type"));
-                        map.put(attribute.get("name"), clazz);
-                    } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                });
-            }
-
-            cepService.addEventType(eventTypeName, map);
-
-        });
+    private void addEventTypes(Rule rule) {
+        List<EventType> eventTypes = rule.getEventTypes();
+        eventTypes.forEach(eventType -> cepService.addEventType(eventType));
     }
 
     /*

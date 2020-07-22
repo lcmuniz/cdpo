@@ -1,6 +1,6 @@
 package br.ufma.lsdi.iotcataloguer.repos;
 
-import br.ufma.lsdi.iotcataloguer.models.GatewayResource;
+import br.ufma.lsdi.cdpo.GatewayResource;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;

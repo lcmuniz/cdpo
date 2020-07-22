@@ -1,5 +1,6 @@
 package br.ufma.lsdi.cdpo.models;
 
+import br.ufma.lsdi.cdpo.Deploy;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 
@@ -16,7 +17,10 @@ public class Rule {
     private Level target;
     private String definition;
     private QoS qos;
-    private Epn epn;
-    private List<EventAttribute> eventAttributes;
-    private List<DeployedRule> deployedRules;
+    //private String epnUuid;
+    //private List<EventAttribute> eventAttributes;
+    //private List<DeployedRule> deployedRules;
+    private List<EventType> eventTypes;
+
+    private List<Deploy> deploys;
 }

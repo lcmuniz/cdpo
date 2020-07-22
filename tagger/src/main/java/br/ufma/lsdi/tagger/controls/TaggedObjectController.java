@@ -1,7 +1,8 @@
 package br.ufma.lsdi.tagger.controls;
 
-import br.ufma.lsdi.tagger.models.ObjectType;
-import br.ufma.lsdi.tagger.models.TaggedObject;
+import br.ufma.lsdi.cdpo.ObjectType;
+import br.ufma.lsdi.cdpo.TaggedObject;
+import br.ufma.lsdi.cdpo.TaggedObjectFilter;
 import br.ufma.lsdi.tagger.repos.ObjectTypeRepository;
 import br.ufma.lsdi.tagger.repos.TaggedObjectRepository;
 import br.ufma.lsdi.tagger.services.TaggedObjectService;
@@ -46,35 +47,27 @@ public class TaggedObjectController {
     }
 
     /*
-    Insere um novo tagged object no banco de dados.
+    Insere ou atualiza um tagged object no banco de dados.
     Os dados são passados no corpo da requisição POST.
-    Retorna o novo tagged object cadastrado.
+    Retorna o tagged object.
      */
     @PostMapping
-    public TaggedObject insert(@RequestBody TaggedObject taggedObject) {
-        // gera um UUID único para o novo tagged object
-        taggedObject.setUuid(UUID.randomUUID().toString());
-        // testa se o object type foi passado na requisição
-        if (taggedObject.getObjectType() != null) {
-            // se sim, busca o object type no banco e preenche no tagged object
-            ObjectType ot = findObjectType(taggedObject.getObjectType().getUuid());
-            taggedObject.setObjectType(ot);
+    public TaggedObject save(@RequestBody TaggedObject taggedObject) {
+
+        if (taggedObject.getUuid() == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Object Type UUID is Required");
         }
-        repo.save(taggedObject);
-        return taggedObject;
-    }
 
-    /*
-    Atualiza um tagged object identificado pelo UUID passado como parâmetro.
-    Os dados a serem atualizados são passados no corpo da requisição PUT.
-    Ex: /tagged-object/90a268cf-853c-4a5b-856d-e591a4e2467b
-    Retorna o tagged object atualizado.
-     */
-    @PutMapping("{uuid}")
-    public TaggedObject update(@PathVariable("uuid") String uuid, @RequestBody TaggedObject taggedObject) {
+        Optional<TaggedObject> opt = repo.findById(taggedObject.getUuid());
 
-        TaggedObject to = findTaggedObject(uuid);
-
+        TaggedObject to;
+        if (opt.isPresent()) {
+            to = opt.get();
+        }
+        else {
+            to = new TaggedObject();
+            to.setUuid(taggedObject.getUuid());
+        }
         // testa se o object type foi passado na requisição
         if (taggedObject.getObjectType() != null) {
             // se sim, busca o object type no banco e preenche no tagged object
@@ -90,7 +83,7 @@ public class TaggedObjectController {
     Retorna os tagged objects filtrados pela expressão passada na requisição.
      */
     @PostMapping("tag-expression")
-    public List<TaggedObject> findbyExpression(@RequestBody Map expression) {
+    public List<TaggedObject> findbyExpression(@RequestBody TaggedObjectFilter expression) {
         List<TaggedObject> tos = serv.find(expression);
         return tos;
     }

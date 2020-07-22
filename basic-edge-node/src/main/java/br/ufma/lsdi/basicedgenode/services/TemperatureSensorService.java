@@ -21,12 +21,12 @@ public class TemperatureSensorService {
      */
     public TemperatureSensorService(CepService cepService) throws InterruptedException {
 
-        cepService.addEventType("Temperature", new Properties());
-        cepService.addEventType("TemperatureG", new Properties());
+        cepService.addEventType("Temperature");
+        cepService.addEventType("TemperatureG");
 
-        Map props = new HashMap<>();
-        props.put("value", Integer.class);
-        cepService.addEventType("TemperatureH", props);
+        Map map = new HashMap<>();
+        map.put("value", Integer.class);
+        cepService.addEventType("TemperatureH", map);
 
         // testa processamento de eventos localmente
         // 1 - processa temperatura (criada localmente)

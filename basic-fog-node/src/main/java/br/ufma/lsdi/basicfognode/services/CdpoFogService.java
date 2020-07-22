@@ -1,5 +1,9 @@
 package br.ufma.lsdi.basicfognode.services;
 
+import br.ufma.lsdi.cdpo.Deploy;
+import br.ufma.lsdi.cdpo.Gateway;
+import br.ufma.lsdi.cdpo.Resource;
+import br.ufma.lsdi.cdpo.Rule;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.paho.client.mqttv3.*;
@@ -46,8 +50,9 @@ public class CdpoFogService {
     @Value("${cdpo.iotcataloguer.url}")
     private String iotCataloguerUrl;
 
-    @Value("${cdpo.tagger.url}")
-    private String taggerUrl;
+    @Value("${cdpo.fognode.url}")
+    private String fogNodeUrl;
+
 
     private final CepService cepService;
     private MqttClient mqttClient;
@@ -71,13 +76,13 @@ public class CdpoFogService {
      */
     private void sendKeepAlive() {
 
-        Map map = new HashMap<>();
-        map.put("dn", dn);
-        map.put("lat", 10.0);
-        map.put("lon", 20.0);
-        map.put("url", "http>//");
+        Gateway gateway = new Gateway();
+        gateway.setDn(dn);
+        gateway.setLat(10.0);
+        gateway.setLon(120.0);
+        gateway.setUrl(fogNodeUrl);
 
-        postOnIotCataloguer(IOT_CATALOGUER_GATEWAY, map);
+        postOnIotCataloguer(gateway);
 
     }
 
@@ -125,6 +130,7 @@ public class CdpoFogService {
                     // o topico tem o formato /cdpo/deploy-status/hostUuid/ruleUuid
                     String[] t = topic.split("/");
 
+                    // TODO: substituir por objeto DeployedStatus
                     Map<String, Object> deployStatus  = new HashMap<>();
                     deployStatus.put("ruleUuid", t[3]);
                     deployStatus.put("hostUuid", t[2]);
@@ -139,8 +145,8 @@ public class CdpoFogService {
                 new Thread(() -> {
                     try {
                         ObjectMapper mapper = new ObjectMapper();
-                        Map<String, Object> map = mapper.readValue(mqttMessage.getPayload(), Map.class);
-                        postOnIotCataloguer(IOT_CATALOGUER_GATEWAY_RELATE, map);
+                        Resource resource = mapper.readValue(mqttMessage.getPayload(), Resource.class);
+                        postOnIotCataloguer(resource);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -154,15 +160,15 @@ public class CdpoFogService {
     /*
     Envia uma regra para a edge
      */
-    public void sendRuleToEdge(Map<String, Object> rule) {
+    public void sendRuleToEdge(Rule rule) {
 
-        List<String> edges = (List) rule.get("edgeUuids");
+        List<Deploy> deploys = rule.getDeploys();
 
-        for (String edge : edges) {
+        for (Deploy deploy : deploys) {
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 byte[] payload = objectMapper.writeValueAsBytes(rule);
-                publish(CDPO_EDGE_RULE + edge, payload);
+                publish(CDPO_EDGE_RULE + deploy.getHostUuuid(), payload);
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
@@ -171,19 +177,36 @@ public class CdpoFogService {
     }
 
     /*
-    Envia uma requisição para o iot cataloguer para o end point especificado com um map no corpo da requisição.
+    Envia uma requisição relate para o iotcataloguer.
     */
-    private void postOnIotCataloguer(String endPoint, Map map) {
+    private void postOnIotCataloguer(Resource resource) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set(HEADER_DN_KEY, dn);
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<Map> entity = new HttpEntity<>(map, headers);
+        HttpEntity<Resource> entity = new HttpEntity<>(resource, headers);
 
         RestTemplate restTemplate = new RestTemplate();
-        restTemplate.postForObject(iotCataloguerUrl + endPoint, entity, Map.class);
+        restTemplate.postForObject(iotCataloguerUrl + IOT_CATALOGUER_GATEWAY_RELATE, entity, Resource.class);
+
+    }
+
+    /*
+    Envia uma requisição gateway para o iotcataloguer.
+    */
+    private void postOnIotCataloguer(Gateway gateway) {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HEADER_DN_KEY, dn);
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Gateway> entity = new HttpEntity<>(gateway, headers);
+
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.postForObject(iotCataloguerUrl + IOT_CATALOGUER_GATEWAY, entity, Gateway.class);
 
     }
 

@@ -1,4 +1,5 @@
-package br.ufma.lsdi.iotcataloguer.models;
+package br.ufma.lsdi.cdpo;
+
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -13,3 +14,4 @@ public class GatewayResource {
     private Resource resource;
     private LocalDateTime timestamp;
 }
+

@@ -1,6 +1,6 @@
 package br.ufma.lsdi.tagger.controls;
 
-import br.ufma.lsdi.tagger.models.ObjectType;
+import br.ufma.lsdi.cdpo.ObjectType;
 import br.ufma.lsdi.tagger.repos.ObjectTypeRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

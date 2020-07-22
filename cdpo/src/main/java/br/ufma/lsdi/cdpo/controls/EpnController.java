@@ -53,6 +53,9 @@ public class EpnController {
         // gera um UUID único para a nova epn
         epn.setUuid(UUID.randomUUID().toString());
         repo.save(epn);
+
+        deployEpn(epn);
+
         return epn;
     }
 

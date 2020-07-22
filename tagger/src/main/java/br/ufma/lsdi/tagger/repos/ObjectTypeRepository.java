@@ -1,6 +1,6 @@
 package br.ufma.lsdi.tagger.repos;
 
-import br.ufma.lsdi.tagger.models.ObjectType;
+import br.ufma.lsdi.cdpo.ObjectType;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;
