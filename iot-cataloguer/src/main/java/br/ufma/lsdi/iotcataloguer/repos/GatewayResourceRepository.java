@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface GatewayResourceRepository extends MongoRepository<GatewayResource, String> {
     List<GatewayResource> findAllByGateway_Dn(String dn);
-    List<GatewayResource> findAllByResource_Uuid(String uuid);
+    List<GatewayResource> findAllByResource_UuidOrderByTimestampDesc(String uuid);
 }

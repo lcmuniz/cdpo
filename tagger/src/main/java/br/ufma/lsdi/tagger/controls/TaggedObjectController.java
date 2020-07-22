@@ -1,13 +1,16 @@
 package br.ufma.lsdi.tagger.controls;
 
+import br.ufma.lsdi.cdpo.Gateway;
 import br.ufma.lsdi.cdpo.ObjectType;
 import br.ufma.lsdi.cdpo.TaggedObject;
 import br.ufma.lsdi.cdpo.TaggedObjectFilter;
 import br.ufma.lsdi.tagger.repos.ObjectTypeRepository;
 import br.ufma.lsdi.tagger.repos.TaggedObjectRepository;
 import br.ufma.lsdi.tagger.services.TaggedObjectService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
@@ -18,6 +21,9 @@ A classe TaggedObjectController fornece os end points 'tagged-object/*'
 @RestController
 @RequestMapping("tagged-object")
 public class TaggedObjectController {
+
+    @Value("${cdpo.iotcataloguer.url}")
+    private String iotCataloguerUrl;
 
     private final TaggedObjectService serv;
     private TaggedObjectRepository repo;
@@ -43,7 +49,13 @@ public class TaggedObjectController {
      */
     @GetMapping("{uuid}")
     public TaggedObject get(@PathVariable("uuid") String uuid) {
-        return findTaggedObject(uuid);
+        TaggedObject to = findTaggedObject(uuid);
+        if (to.getObjectType().getType().equals("EdgeNode")) {
+            // busca o ultimo gateway associado
+            Gateway lastGateway = findLastGateway(uuid);
+            to.setLastGateway(lastGateway);
+        }
+        return to;
     }
 
     /*
@@ -85,6 +97,9 @@ public class TaggedObjectController {
     @PostMapping("tag-expression")
     public List<TaggedObject> findbyExpression(@RequestBody TaggedObjectFilter expression) {
         List<TaggedObject> tos = serv.find(expression);
+        for (TaggedObject to : tos) {
+            to.setLastGateway(findLastGateway(to.getUuid()));
+        }
         return tos;
     }
 
@@ -111,6 +126,13 @@ public class TaggedObjectController {
         catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Object Type Not Found");
         }
+    }
+
+    // busca o ultimo gateway associado
+    private Gateway findLastGateway(String uuid) {
+        RestTemplate restTemplate = new RestTemplate();
+        Gateway lastGateway = restTemplate.getForObject(iotCataloguerUrl + "/iot-cataloguer/resource/" + uuid + "/last-gateway", Gateway.class);
+        return lastGateway;
     }
 
 }
