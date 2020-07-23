@@ -42,7 +42,7 @@ public class GatewayController {
         return gRepo.findAll();
     }
 
-    @GetMapping("get")
+    @GetMapping("dn")
     public Gateway getByDn(@RequestHeader("${iotcataloguer.dnattribute}") String dn) {
         Optional<Gateway> opt = gRepo.findByDn(dn);
         if (!opt.isPresent()) {
@@ -73,7 +73,7 @@ public class GatewayController {
 
     @GetMapping("resources")
     public List<GatewayResource> getResources(@RequestHeader("${iotcataloguer.dnattribute}") String dn) {
-        return getResourcesByGateway(dn);
+        return grRepo.findAllByGateway_Dn(dn);
     }
 
     @PostMapping("relate")
@@ -113,10 +113,6 @@ public class GatewayController {
 
         return gRepo.findAllByUuidIn(uuids);
 
-    }
-
-    private List<GatewayResource> getResourcesByGateway(String dn) {
-        return grRepo.findAllByGateway_Dn(dn);
     }
 
 }

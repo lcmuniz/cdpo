@@ -64,15 +64,6 @@ public class ResourceController {
         return r;
     }
 
-    private Resource find(String uuid) {
-        try {
-            return rRepo.findById(uuid).get();
-        }
-        catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource Not Found");
-        }
-    }
-
     @GetMapping("/{uuid}/last-gateway")
     public Gateway getGateways(@PathVariable("uuid") String uuid) {
         List<GatewayResource> list = grRepo.findAllByResource_UuidOrderByTimestampDesc(uuid);
@@ -102,6 +93,15 @@ public class ResourceController {
 
         return resourceService.findAllByUuidInWithLastGateway(uuids);
 
+    }
+
+    private Resource find(String uuid) {
+        try {
+            return rRepo.findById(uuid).get();
+        }
+        catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource Not Found");
+        }
     }
 
 
