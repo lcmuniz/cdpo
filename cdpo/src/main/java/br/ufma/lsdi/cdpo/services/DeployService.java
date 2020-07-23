@@ -26,9 +26,9 @@ public class DeployService {
     public void deploy(Epn epn) {
 
         // lista de deploys para fogs
-        Map<String, Deploy> deployFogRules = new HashMap<>();
+        Map<String, Deploy> fogDeploys = new HashMap<>();
         // lista de deploys para edges
-        Map<String, Deploy> deployEdgeRules = new HashMap<>();
+        Map<String, Deploy> edgeDeploys = new HashMap<>();
 
         // para cada regra...
         epn.getRules().forEach(rule -> {
@@ -43,26 +43,26 @@ public class DeployService {
                 resources.forEach(resource -> {
                     // pega o ultimo gateway
                     Gateway gateway = resource.getLastGateway();
-                    if (!deployEdgeRules.containsKey(gateway.getUuid())) {
+                    if (!edgeDeploys.containsKey(gateway.getUuid())) {
                         // cria um deploy para este gateway
-                        deployEdgeRules.put(gateway.getUuid(), new Deploy());
-                        deployEdgeRules.get(gateway.getUuid()).setUuid(UUID.randomUUID().toString());
-                        deployEdgeRules.get(gateway.getUuid()).setEpn(epn);
-                        deployEdgeRules.get(gateway.getUuid()).setGateway(gateway);
+                        edgeDeploys.put(gateway.getUuid(), new Deploy());
+                        edgeDeploys.get(gateway.getUuid()).setUuid(UUID.randomUUID().toString());
+                        edgeDeploys.get(gateway.getUuid()).setEpn(epn);
+                        edgeDeploys.get(gateway.getUuid()).setGateway(gateway);
                     }
                     // adiciona o edge ao deploy
-                    if (deployEdgeRules.get(gateway.getUuid()).getResources() == null) {
-                        deployEdgeRules.get(gateway.getUuid()).setResources(new ArrayList<>());
+                    if (edgeDeploys.get(gateway.getUuid()).getResources() == null) {
+                        edgeDeploys.get(gateway.getUuid()).setResources(new ArrayList<>());
                     }
-                    if (!deployEdgeRules.get(gateway.getUuid()).getResources().contains(resource)) {
-                        deployEdgeRules.get(gateway.getUuid()).getResources().add(resource);
+                    if (!edgeDeploys.get(gateway.getUuid()).getResources().contains(resource)) {
+                        edgeDeploys.get(gateway.getUuid()).getResources().add(resource);
                     }
                     // adiciona a regra ao deploy
-                    if (deployEdgeRules.get(gateway.getUuid()).getRules() == null) {
-                        deployEdgeRules.get(gateway.getUuid()).setRules(new ArrayList<>());
+                    if (edgeDeploys.get(gateway.getUuid()).getRules() == null) {
+                        edgeDeploys.get(gateway.getUuid()).setRules(new ArrayList<>());
                     }
-                    if (!deployEdgeRules.get(gateway.getUuid()).getRules().contains(rule)) {
-                        deployEdgeRules.get(gateway.getUuid()).getRules().add(rule);
+                    if (!edgeDeploys.get(gateway.getUuid()).getRules().contains(rule)) {
+                        edgeDeploys.get(gateway.getUuid()).getRules().add(rule);
                     }
                 });
             }
@@ -71,18 +71,18 @@ public class DeployService {
                 List<Gateway> gateways = findGateways(rule.getTagFilter());;
                 // para cada gateway...
                 gateways.forEach(gateway -> {
-                    if (!deployFogRules.containsKey(gateway.getUuid())) {
+                    if (!fogDeploys.containsKey(gateway.getUuid())) {
                         // cria um deploy para este gateway
-                        deployFogRules.put(gateway.getUuid(), new Deploy());
-                        deployFogRules.get(gateway.getUuid()).setUuid(UUID.randomUUID().toString());
-                        deployFogRules.get(gateway.getUuid()).setEpn(epn);
-                        deployFogRules.get(gateway.getUuid()).setGateway(gateway);
+                        fogDeploys.put(gateway.getUuid(), new Deploy());
+                        fogDeploys.get(gateway.getUuid()).setUuid(UUID.randomUUID().toString());
+                        fogDeploys.get(gateway.getUuid()).setEpn(epn);
+                        fogDeploys.get(gateway.getUuid()).setGateway(gateway);
                     }
                     // adiciona a regra ao deploy
-                    if (deployFogRules.get(gateway.getUuid()).getRules() == null) {
-                        deployFogRules.get(gateway.getUuid()).setRules(new ArrayList<>());
+                    if (fogDeploys.get(gateway.getUuid()).getRules() == null) {
+                        fogDeploys.get(gateway.getUuid()).setRules(new ArrayList<>());
                     }
-                    deployFogRules.get(gateway.getUuid()).getRules().add(rule);
+                    fogDeploys.get(gateway.getUuid()).getRules().add(rule);
                 });
             }
             else if (rule.getLevel().equals(Level.CLOUD)) {
@@ -91,9 +91,27 @@ public class DeployService {
 
         });
 
-        System.out.println("DEPLOYS PARA OS FOG NODES: " + deployFogRules);
-        System.out.println("DEPLOYS PARA OS EDGE NODES:" + deployEdgeRules);
+        deploy2FogNodes(fogDeploys);
+        deploy2EdgeNodes(fogDeploys);
 
+    }
+
+    // faz o deloy enviando para cada gateway suas regras
+    private void deploy2FogNodes(Map<String, Deploy> fogDeploys) {
+        fogDeploys.forEach((uuids, deploy) -> {
+            RestTemplate restTemplate = new RestTemplate();
+            HttpEntity<Deploy> request = new HttpEntity<>(deploy);
+            restTemplate.exchange(deploy.getGateway().getUrl() + "/deploy-fog", HttpMethod.POST, request, new ParameterizedTypeReference<Deploy>() {});
+        });
+    }
+
+    // faz o deloy enviando para cada gateway as regras de seus edges
+    private void deploy2EdgeNodes(Map<String, Deploy> edgeDeploys) {
+        edgeDeploys.forEach((uuids, deploy) -> {
+            RestTemplate restTemplate = new RestTemplate();
+            HttpEntity<Deploy> request = new HttpEntity<>(deploy);
+            restTemplate.exchange(deploy.getGateway().getUrl() + "/deploy-edge", HttpMethod.POST, request, new ParameterizedTypeReference<Deploy>() {});
+        });
     }
 
     // encontra todos os gateways de acordo com as tags

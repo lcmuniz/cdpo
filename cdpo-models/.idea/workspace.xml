@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="1be17a78-f526-49fa-94fe-c6be06a4208a" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/controls/EpnController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/controls/EpnController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/models/DeployStatus.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/models/DeployedRule.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/models/EventAtrributeType.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/models/EventAttribute.java" beforeDir="false" />
-    </list>
+    <list default="true" id="1be17a78-f526-49fa-94fe-c6be06a4208a" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
