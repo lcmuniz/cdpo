@@ -1,6 +1,6 @@
 package br.ufma.lsdi.cdpo.controls;
 
-import br.ufma.lsdi.cdpo.models.Epn;
+import br.ufma.lsdi.cdpo.Epn;
 import br.ufma.lsdi.cdpo.repos.EpnRepository;
 import br.ufma.lsdi.cdpo.services.DeployService;
 import org.springframework.http.HttpStatus;

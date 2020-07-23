@@ -1,19 +1,15 @@
 package br.ufma.lsdi.cdpo.services;
 
-import br.ufma.lsdi.cdpo.Deploy;
-import br.ufma.lsdi.cdpo.ObjectType;
-import br.ufma.lsdi.cdpo.TaggedObject;
-import br.ufma.lsdi.cdpo.TaggedObjectFilter;
-import br.ufma.lsdi.cdpo.models.Epn;
-import br.ufma.lsdi.cdpo.models.Level;
-import br.ufma.lsdi.cdpo.models.Rule;
+import br.ufma.lsdi.cdpo.*;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /*
 Classe de serviço com métodos para realizar o deploy da epn na rede.
@@ -21,57 +17,54 @@ Classe de serviço com métodos para realizar o deploy da epn na rede.
 @Service
 public class DeployService {
 
-    @Value("${cdpo.tagger.url}")
-    private String taggerUrl;
+    @Value("${cdpo.iotcataloguer.url}")
+    private String iotCataloguerUrl;
 
     public void deploy(Epn epn) {
 
-        epn.getRules().stream().forEach(rule -> {
+        Map<String, Deploy> deployMap = new HashMap<>();
+
+        epn.getRules().forEach(rule -> {
 
             if (rule.getLevel().equals(Level.EDGE)) {
-                List<Deploy> deploys = getDeploys(rule, "EdgeNode");
-                rule.setDeploys(deploys);
 
             }
             else if (rule.getLevel().equals(Level.FOG)) {
-                List<Deploy> deploys = getDeploys(rule, "FogNode");
-                rule.setDeploys(deploys);
+                // acha os  gateways
+                List<Gateway> gateways = findGateways(rule.getTagFilter());;
+                // para cada gateway...
+                gateways.forEach(gateway -> {
+                    // cria um Deploy e adiciona a regra nele
+                    if (!deployMap.containsKey(gateway.getUuid())) {
+                        deployMap.put(gateway.getUuid(), new Deploy());
+                        deployMap.get(gateway.getUuid()).setUuid(UUID.randomUUID().toString());
+                        deployMap.get(gateway.getUuid()).setEpn(epn);
+                        deployMap.get(gateway.getUuid()).setGateway(gateway);
+                    }
+                    if (deployMap.get(gateway.getUuid()).getRules() == null) {
+                        deployMap.get(gateway.getUuid()).setRules(new ArrayList<>());
+                    }
+                    deployMap.get(gateway.getUuid()).getRules().add(rule);
+                });
             }
             else if (rule.getLevel().equals(Level.CLOUD)) {
-                List<Deploy> deploys = getDeploys(rule, "Resource");
-                rule.setDeploys(deploys);
+
             }
 
-            //para fazer o deploy eh necessario o gateway de cada edge
-
-            System.out.println(rule);
 
         });
 
+        System.out.println(deployMap);
+
     }
 
-    private List<Deploy> getDeploys(Rule rule, String resourceType) {
-
-        ObjectType ot = new ObjectType();
-        ot.setType(resourceType);
-        TaggedObjectFilter filter = new TaggedObjectFilter();
-        filter.setObjectType(ot);
-        filter.setExpression(rule.getTagFilter());
-
+    // encontra todos os gateways de acordo com as tags
+    private List<Gateway> findGateways(String tagFilter) {
         RestTemplate restTemplate = new RestTemplate();
-        HttpEntity<TaggedObjectFilter> entity = new HttpEntity<>(filter);
-        List<TaggedObject> resources = restTemplate.postForObject(taggerUrl + "/tagger/tagged-object/tag-expression", entity, List.class);
-
-        List<Deploy> deploys = resources.stream().map(resource -> {
-            Deploy deploy = new Deploy();
-            deploy.setUuid(UUID.randomUUID().toString());
-            deploy.setHostUuuid(resource.getUuid());
-            return deploy;
-        }).collect(Collectors.toList());
-
-        return deploys;
-
+        HttpEntity<String> request = new HttpEntity<>(tagFilter);
+        ResponseEntity<List<Gateway>> response = restTemplate.exchange(iotCataloguerUrl + "iot-cataloguer/gateway/expression", HttpMethod.POST, request, new ParameterizedTypeReference<List<Gateway>>() {});
+        List<Gateway> gateways = response.getBody();
+        return gateways;
     }
-
 
 }

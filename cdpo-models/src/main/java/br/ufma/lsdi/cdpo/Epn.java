@@ -1,4 +1,4 @@
-package br.ufma.lsdi.cdpo.models;
+package br.ufma.lsdi.cdpo;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;

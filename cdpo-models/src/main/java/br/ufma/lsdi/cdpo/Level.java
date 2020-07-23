@@ -1,9 +1,9 @@
 package br.ufma.lsdi.cdpo;
 
 public enum Level {
-    CLOUD("cloud"),
-    FOG("fog"),
-    EDGE("edge");
+    CLOUD("CLOUD"),
+    FOG("FOG"),
+    EDGE("EDGE");
 
     private final String level;
 

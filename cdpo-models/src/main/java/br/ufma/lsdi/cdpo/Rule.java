@@ -10,13 +10,11 @@ public class Rule {
     @Id
     private String uuid;
     private String name;
-    private Double description;
+    private String description;
     private QoS qos;
     private Level level;
     private Level target;
     private String tagFilter;
     private String definition;
     private List<EventType> eventTypes;
-
-    private List<Deploy> deploys;
 }

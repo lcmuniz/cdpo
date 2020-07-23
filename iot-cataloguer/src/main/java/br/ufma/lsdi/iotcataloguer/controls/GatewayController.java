@@ -1,23 +1,31 @@
 package br.ufma.lsdi.iotcataloguer.controls;
 
-import br.ufma.lsdi.cdpo.Gateway;
-import br.ufma.lsdi.cdpo.GatewayResource;
-import br.ufma.lsdi.cdpo.Resource;
+import br.ufma.lsdi.cdpo.*;
 import br.ufma.lsdi.iotcataloguer.repos.GatewayRepository;
 import br.ufma.lsdi.iotcataloguer.repos.GatewayResourceRepository;
 import br.ufma.lsdi.iotcataloguer.repos.ResourceRepository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("gateway")
 public class GatewayController {
+
+    @Value("${cdpo.tagger.url}")
+    private String taggerUrl;
 
     private final GatewayRepository gRepo;
     private final ResourceRepository rRepo;
@@ -54,7 +62,7 @@ public class GatewayController {
         else {
             g = new Gateway();
             g.setUuid(UUID.randomUUID().toString());
-            g.setDn(gateway.getDn());
+            g.setDn(dn);
         }
         if (gateway.getLat() != null) g.setLat(gateway.getLat());
         if (gateway.getLon() != null) g.setLon(gateway.getLon());
@@ -87,6 +95,24 @@ public class GatewayController {
 
         grRepo.save(gatewayResource);
         return gatewayResource;
+    }
+
+    @PostMapping("expression")
+    public List<Gateway> getByExpression(@RequestBody String expression) {
+        ObjectType ot = new ObjectType();
+        ot.setType("FogNode");
+        TaggedObjectFilter filter = new TaggedObjectFilter();
+        filter.setObjectType(ot);
+        filter.setExpression(expression);
+
+        RestTemplate restTemplate = new RestTemplate();
+        HttpEntity<TaggedObjectFilter> request = new HttpEntity<>(filter);
+
+        ResponseEntity<List<TaggedObject>> response = restTemplate.exchange(taggerUrl + "/tagger/tagged-object/tag-expression", HttpMethod.POST, request, new ParameterizedTypeReference<List<TaggedObject>>() {});
+        List<String> uuids = response.getBody().stream().map(to -> to.getUuid()).collect(Collectors.toList());
+
+        return gRepo.findAllByUuidIn(uuids);
+
     }
 
     private List<GatewayResource> getResourcesByGateway(String dn) {
