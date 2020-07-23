@@ -2,18 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1be17a78-f526-49fa-94fe-c6be06a4208a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../iot-cataloguer/src/main/java/br/ufma/lsdi/iotcataloguer/services/ResourceService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/ufma/lsdi/cdpo/Resource.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/ufma/lsdi/cdpo/Resource.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/ufma/lsdi/cdpo/TaggedObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/ufma/lsdi/cdpo/TaggedObject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/br/ufma/lsdi/cdpo/Resource.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/br/ufma/lsdi/cdpo/Resource.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/br/ufma/lsdi/cdpo/TaggedObject.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/br/ufma/lsdi/cdpo/TaggedObject.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/controls/EpnController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/controls/EpnController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/services/DeployService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/services/DeployService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../iot-cataloguer/src/main/java/br/ufma/lsdi/iotcataloguer/controls/ResourceController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../iot-cataloguer/src/main/java/br/ufma/lsdi/iotcataloguer/controls/ResourceController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../iot-cataloguer/src/main/java/br/ufma/lsdi/iotcataloguer/repos/ResourceRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/../iot-cataloguer/src/main/java/br/ufma/lsdi/iotcataloguer/repos/ResourceRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../tagger/src/main/java/br/ufma/lsdi/tagger/controls/TaggedObjectController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../tagger/src/main/java/br/ufma/lsdi/tagger/controls/TaggedObjectController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../tagger/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../tagger/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/models/DeployStatus.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/models/DeployedRule.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/models/EventAtrributeType.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/models/EventAttribute.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

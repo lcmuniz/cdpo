@@ -65,7 +65,7 @@ public class EpnController {
     Ex: /epn/90a268cf-853c-4a5b-856d-e591a4e2467b
     Retorna a epn atualizada.
      */
-    @PutMapping("{uuid}")
+    @PostMapping("{uuid}")
     public Epn update(@PathVariable("uuid") String uuid, @RequestBody Epn epn) {
 
         Epn e = findEpn(uuid);
@@ -81,7 +81,7 @@ public class EpnController {
         if (epn.getQos() != null) e.setQos(epn.getQos());
         repo.save(e);
 
-        deployEpn(e);
+        // TODO: eh pra fazer o deploy novamente?
 
         return e;
     }
