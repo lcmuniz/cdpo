@@ -81,7 +81,7 @@ public class EpnController {
         if (epn.getQos() != null) e.setQos(epn.getQos());
         repo.save(e);
 
-        deployEpn(epn);
+        deployEpn(e);
 
         return e;
     }

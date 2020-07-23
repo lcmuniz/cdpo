@@ -12,6 +12,4 @@ public class TaggedObject {
     private String uuid;
     private ObjectType objectType;
     private List<String> tags;
-    @Transient
-    private Gateway lastGateway;
 }
