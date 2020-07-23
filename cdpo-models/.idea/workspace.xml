@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="1be17a78-f526-49fa-94fe-c6be06a4208a" name="Default Changelist" comment="" />
+    <list default="true" id="1be17a78-f526-49fa-94fe-c6be06a4208a" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../basic-edge-node/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../basic-edge-node/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../basic-edge-node/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../basic-edge-node/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cdpo-models.iml" beforeDir="false" afterPath="$PROJECT_DIR$/cdpo-models.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tagger/src/main/java/br/ufma/lsdi/tagger/controls/TaggedObjectController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../tagger/src/main/java/br/ufma/lsdi/tagger/controls/TaggedObjectController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tagger/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../tagger/src/main/resources/application.properties" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -56,6 +64,7 @@
       <option name="presentableId" value="Default" />
       <updated>1595422946597</updated>
       <workItem from="1595422949660" duration="9525000" />
+      <workItem from="1595532761732" duration="2762000" />
     </task>
     <servers />
   </component>
