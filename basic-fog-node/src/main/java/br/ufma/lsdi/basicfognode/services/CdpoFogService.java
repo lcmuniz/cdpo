@@ -1,9 +1,7 @@
 package br.ufma.lsdi.basicfognode.services;
 
-import br.ufma.lsdi.cdpo.Deploy;
-import br.ufma.lsdi.cdpo.Gateway;
-import br.ufma.lsdi.cdpo.Resource;
-import br.ufma.lsdi.cdpo.Rule;
+import br.ufma.lsdi.cdpo.*;
+import com.espertech.esper.client.EPStatement;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.paho.client.mqttv3.*;
@@ -11,9 +9,11 @@ import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -30,6 +30,7 @@ public class CdpoFogService {
     private final String CDPO_EDGE_RULE = "/cdpo/edge-rule/";
     private final String CDPO_EDGE_EVENT = "/cdpo/edge-event/";
     private final String CDPO_DEPLOY_STATUS = "/cdpo/deploy-status/";
+    private final String CDPO_COMPOSER_PUBLISH_EVENT = "/cdpo/publishNewCdpoEvent/";
 
     // cdpo end points
     private final String IOT_CATALOGUER_GATEWAY = "iot-cataloguer/gateway";
@@ -37,6 +38,7 @@ public class CdpoFogService {
     private final String EPN_DEPLOY_STATUS = "/epn/deployStatus";
 
     private final String HEADER_DN_KEY = "X-SSL-Client-DN";
+
 
     @Value("${cdpo.mqttbroker.url}")
     private String brokerUrl;
@@ -53,6 +55,8 @@ public class CdpoFogService {
     @Value("${cdpo.fognode.url}")
     private String fogNodeUrl;
 
+    @Value("${cdpo.composer.url}")
+    private String cdpoComposerUrl;
 
     private final CepService cepService;
     private MqttClient mqttClient;
@@ -158,22 +162,62 @@ public class CdpoFogService {
     }
 
     /*
-    Envia uma regra para a edge
+    Envia regras para um edge
      */
-    public void sendRuleToEdge(Rule rule) {
+    public void sendRuleToEdge(Resource resource, List<Rule> rules) {
 
-        List<Deploy> deploys = rule.getDeploys();
-
-        for (Deploy deploy : deploys) {
+        for (Rule rule : rules) {
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 byte[] payload = objectMapper.writeValueAsBytes(rule);
-                publish(CDPO_EDGE_RULE + deploy.getHostUuuid(), payload);
+                publish(CDPO_EDGE_RULE + resource.getUuid(), payload);
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
         }
 
+    }
+
+    /*
+    Trata as regras processadas na fog
+     */
+    public void processInFog(Rule rule) {
+
+        addEventTypes(rule);
+
+        // se o resultado da regra deve ser enviada a fog...
+        if (rule.getTarget().equals(Level.FOG)) {
+            // insere os eventos com o nome da regra para que
+            // o fog possa processar localmente
+            String insertRule = "insert into " + rule.getName() + " " + rule.getDefinition();
+            cepService.addRule(insertRule, rule.getName());
+        }
+        else if (rule.getTarget().equals(Level.CLOUD)) {
+            // se o resultado da regra deve ser enviada à cloud ...
+            // adiciona a regra no CepService e o listener associado
+            // que envia os resultados para a forwardUrl (cloud)
+            EPStatement stm = cepService.addRule(rule.getDefinition(), rule.getName());
+            stm.addListener((eventBeans, eventBeans1) -> {
+                new Thread(() -> {
+                    Map event = (Map) eventBeans[0].getUnderlying();
+                    RestTemplate restTemplate = new RestTemplate();
+                    String topic = cdpoComposerUrl + CDPO_COMPOSER_PUBLISH_EVENT + rule.getUuid();
+                    restTemplate.postForObject(topic, event, Map.class);
+                }).start();
+            });
+        }
+        else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid Rule Target");
+        }
+
+    }
+
+    /*
+    Adiciona os event types ao serviço Cep
+     */
+    private void addEventTypes(Rule rule) {
+        List<EventType> eventTypes = rule.getEventTypes();
+        eventTypes.forEach(eventType -> cepService.addEventType(eventType));
     }
 
     /*

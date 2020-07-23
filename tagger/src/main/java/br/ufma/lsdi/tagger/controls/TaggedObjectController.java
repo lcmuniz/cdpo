@@ -1,13 +1,13 @@
 package br.ufma.lsdi.tagger.controls;
 
-import br.ufma.lsdi.cdpo.Gateway;
 import br.ufma.lsdi.cdpo.ObjectType;
 import br.ufma.lsdi.cdpo.TaggedObject;
 import br.ufma.lsdi.cdpo.TaggedObjectFilter;
 import br.ufma.lsdi.tagger.repos.ObjectTypeRepository;
 import br.ufma.lsdi.tagger.repos.TaggedObjectRepository;
 import br.ufma.lsdi.tagger.services.TaggedObjectService;
-import org.springframework.beans.factory.annotation.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -36,7 +36,8 @@ public class TaggedObjectController {
      */
     @GetMapping
     public List<TaggedObject> find() {
-        return repo.findAll();
+        List<TaggedObject> obs = repo.findAll();
+        return obs;
     }
 
     /*
@@ -56,7 +57,6 @@ public class TaggedObjectController {
      */
     @PostMapping
     public TaggedObject save(@RequestBody TaggedObject taggedObject) {
-
         if (taggedObject.getUuid() == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Object Type UUID is Required");
         }

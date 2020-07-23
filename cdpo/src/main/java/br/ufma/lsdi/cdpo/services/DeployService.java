@@ -92,7 +92,7 @@ public class DeployService {
         });
 
         deploy2FogNodes(fogDeploys);
-        deploy2EdgeNodes(fogDeploys);
+        deploy2EdgeNodes(edgeDeploys);
 
     }
 

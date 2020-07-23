@@ -2,6 +2,8 @@ package br.ufma.lsdi.tagger.controls;
 
 import br.ufma.lsdi.cdpo.ObjectType;
 import br.ufma.lsdi.tagger.repos.ObjectTypeRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -28,7 +30,8 @@ public class ObjectTypeController {
      */
     @GetMapping
     public List<ObjectType> find() {
-        return repo.findAll();
+        List<ObjectType> obs = repo.findAll();
+        return obs;
     }
 
     /*
@@ -37,7 +40,8 @@ public class ObjectTypeController {
      */
     @GetMapping("{uuid}")
     public ObjectType get(@PathVariable("uuid") String uuid) {
-        return findObjectType(uuid);
+        ObjectType obj = findObjectType(uuid);
+        return obj;
     }
 
     /*
@@ -75,7 +79,6 @@ public class ObjectTypeController {
      */
     @PutMapping("{uuid}")
     public ObjectType update(@PathVariable("uuid") String uuid, @RequestBody ObjectType objectType) {
-
         ObjectType ot = findObjectType(uuid);
 
         // testa cada campo para ver se foram passados na requisição.
