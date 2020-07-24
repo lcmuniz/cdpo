@@ -82,7 +82,7 @@ public class CdpoFogService {
 
         Gateway gateway = new Gateway();
         gateway.setDn(dn);
-        gateway.setLat(10.0);
+        gateway.setLat(120.0);
         gateway.setLon(120.0);
         gateway.setUrl(fogNodeUrl);
 

@@ -21,13 +21,13 @@ public class BasicFogNodeService {
             cepService.addEventType("TemperatureH");
             EPStatement stm = cepService.addRule("select * from TemperatureH");
             stm.addListener((eventBeans, eventBeans1) -> {
-                new Thread(() -> System.out.println(">>>>>>>>>>FOG" + eventBeans[0].getUnderlying())).start();
+                new Thread(() -> System.out.println("### TemperaturaH - " + eventBeans[0].getUnderlying())).start();
             });
 
             cepService.addEventType("TemperatureX");
             EPStatement stm2 = cepService.addRule("select * from TemperatureX", "TemperatureX");
             stm2.addListener((eventBeans, eventBeans1) -> {
-                new Thread(() -> System.out.println(">>>>>>>>>>FOG222222222222222" + eventBeans[0].getUnderlying())).start();
+                new Thread(() -> System.out.println("### TemperaturaX - " + eventBeans[0].getUnderlying())).start();
             });
 
         }).start();

@@ -33,14 +33,14 @@ public class TemperatureSensorService {
         EPStatement stm = cepService.addRule("select * from Temperature", "Temperature");
         stm.addListener((eventBeans, eventBeans1) -> {
             Map temperature = (Map) eventBeans[0].getUnderlying();
-            System.out.println(">>>" + temperature);
+            System.out.println(">>> Temperature - " + temperature);
         });
 
         // 2 - processa temperatura h (criada por regra enviada pelo fog)
         EPStatement stm2 = cepService.addRule("select * from TemperatureH where value >= 35 or value <= 25", "TemperatureG");
         stm2.addListener((eventBeans, eventBeans1) -> {
             Map temperatureH = (Map) eventBeans[0].getUnderlying();
-            System.out.println("+++++" + temperatureH);
+            System.out.println(">>> TemperatureH - " + temperatureH);
         });
 
 

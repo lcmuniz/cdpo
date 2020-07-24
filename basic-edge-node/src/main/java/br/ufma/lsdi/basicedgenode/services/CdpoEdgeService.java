@@ -64,8 +64,8 @@ public class CdpoEdgeService {
         Resource resource = new Resource();
         resource.setUuid(clientUuid);
         resource.setName(edgeName);
-        resource.setLat(30.0);  // esses valores de lat e lon devem vir de um serviço de localização
-        resource.setLon(20.0);
+        resource.setLat(300.0);  // esses valores de lat e lon devem vir de um serviço de localização
+        resource.setLon(200.0);
 
         ObjectMapper mapper = new ObjectMapper();
 

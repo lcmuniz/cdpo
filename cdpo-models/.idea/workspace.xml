@@ -2,13 +2,20 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1be17a78-f526-49fa-94fe-c6be06a4208a" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../basic-edge-node/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../basic-edge-node/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../basic-edge-node/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../basic-edge-node/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cdpo-models.iml" beforeDir="false" afterPath="$PROJECT_DIR$/cdpo-models.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../tagger/src/main/java/br/ufma/lsdi/tagger/controls/TaggedObjectController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../tagger/src/main/java/br/ufma/lsdi/tagger/controls/TaggedObjectController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../tagger/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../tagger/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/br/ufma/lsdi/cdpo/Deploy.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/br/ufma/lsdi/cdpo/Epn.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/br/ufma/lsdi/cdpo/EventType.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/br/ufma/lsdi/cdpo/EventTypeAttribute.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/br/ufma/lsdi/cdpo/Gateway.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/br/ufma/lsdi/cdpo/GatewayResource.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/br/ufma/lsdi/cdpo/Level.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/br/ufma/lsdi/cdpo/ObjectType.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/br/ufma/lsdi/cdpo/QoS.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/br/ufma/lsdi/cdpo/Resource.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/br/ufma/lsdi/cdpo/Rule.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/br/ufma/lsdi/cdpo/TaggedObject.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/br/ufma/lsdi/cdpo/TaggedObjectFilter.class" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
