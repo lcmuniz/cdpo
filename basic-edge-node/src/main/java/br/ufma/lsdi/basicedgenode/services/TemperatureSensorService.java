@@ -43,7 +43,6 @@ public class TemperatureSensorService {
             System.out.println(">>> TemperatureH - " + temperatureH);
         });
 
-
         // gera temperaturas e envia para o cep service
 
         int temperature = 30;

@@ -25,74 +25,74 @@ public class DeployService {
      */
     public void deploy(Epn epn) {
 
-        // lista de deploys para fogs
-        Map<String, Deploy> fogDeploys = new HashMap<>();
-        // lista de deploys para edges
-        Map<String, Deploy> edgeDeploys = new HashMap<>();
+            // lista de deploys para fogs
+            Map<String, Deploy> fogDeploys = new HashMap<>();
+            // lista de deploys para edges
+            Map<String, Deploy> edgeDeploys = new HashMap<>();
 
-        // para cada regra...
-        epn.getRules().forEach(rule -> {
+            // para cada regra...
+            epn.getRules().forEach(rule -> {
 
-            // seta o uuid da regra
-            if (rule.getUuid() == null) rule.setUuid(UUID.randomUUID().toString());
+                // seta o uuid da regra
+                if (rule.getUuid() == null) rule.setUuid(UUID.randomUUID().toString());
 
-            if (rule.getLevel().equals(Level.EDGE)) {
-                // acha os edges
-                List<Resource> resources = findResources(rule.getTagFilter());;
-                // para cada edge ...
-                resources.forEach(resource -> {
-                    // pega o ultimo gateway
-                    Gateway gateway = resource.getLastGateway();
-                    if (!edgeDeploys.containsKey(gateway.getUuid())) {
-                        // cria um deploy para este gateway
-                        edgeDeploys.put(gateway.getUuid(), new Deploy());
-                        edgeDeploys.get(gateway.getUuid()).setUuid(UUID.randomUUID().toString());
-                        edgeDeploys.get(gateway.getUuid()).setEpn(epn);
-                        edgeDeploys.get(gateway.getUuid()).setGateway(gateway);
-                    }
-                    // adiciona o edge ao deploy
-                    if (edgeDeploys.get(gateway.getUuid()).getResources() == null) {
-                        edgeDeploys.get(gateway.getUuid()).setResources(new ArrayList<>());
-                    }
-                    if (!edgeDeploys.get(gateway.getUuid()).getResources().contains(resource)) {
-                        edgeDeploys.get(gateway.getUuid()).getResources().add(resource);
-                    }
-                    // adiciona a regra ao deploy
-                    if (edgeDeploys.get(gateway.getUuid()).getRules() == null) {
-                        edgeDeploys.get(gateway.getUuid()).setRules(new ArrayList<>());
-                    }
-                    if (!edgeDeploys.get(gateway.getUuid()).getRules().contains(rule)) {
-                        edgeDeploys.get(gateway.getUuid()).getRules().add(rule);
-                    }
-                });
-            }
-            else if (rule.getLevel().equals(Level.FOG)) {
-                // acha os  gateways
-                List<Gateway> gateways = findGateways(rule.getTagFilter());;
-                // para cada gateway...
-                gateways.forEach(gateway -> {
-                    if (!fogDeploys.containsKey(gateway.getUuid())) {
-                        // cria um deploy para este gateway
-                        fogDeploys.put(gateway.getUuid(), new Deploy());
-                        fogDeploys.get(gateway.getUuid()).setUuid(UUID.randomUUID().toString());
-                        fogDeploys.get(gateway.getUuid()).setEpn(epn);
-                        fogDeploys.get(gateway.getUuid()).setGateway(gateway);
-                    }
-                    // adiciona a regra ao deploy
-                    if (fogDeploys.get(gateway.getUuid()).getRules() == null) {
-                        fogDeploys.get(gateway.getUuid()).setRules(new ArrayList<>());
-                    }
-                    fogDeploys.get(gateway.getUuid()).getRules().add(rule);
-                });
-            }
-            else if (rule.getLevel().equals(Level.CLOUD)) {
+                if (rule.getLevel().equals(Level.EDGE)) {
+                    // acha os edges
+                    List<Resource> resources = findResources(rule.getTagFilter());
+                    ;
+                    // para cada edge ...
+                    resources.forEach(resource -> {
+                        // pega o ultimo gateway
+                        Gateway gateway = resource.getLastGateway();
+                        if (!edgeDeploys.containsKey(gateway.getUuid())) {
+                            // cria um deploy para este gateway
+                            edgeDeploys.put(gateway.getUuid(), new Deploy());
+                            edgeDeploys.get(gateway.getUuid()).setUuid(UUID.randomUUID().toString());
+                            edgeDeploys.get(gateway.getUuid()).setEpn(epn);
+                            edgeDeploys.get(gateway.getUuid()).setGateway(gateway);
+                        }
+                        // adiciona o edge ao deploy
+                        if (edgeDeploys.get(gateway.getUuid()).getResources() == null) {
+                            edgeDeploys.get(gateway.getUuid()).setResources(new ArrayList<>());
+                        }
+                        if (!edgeDeploys.get(gateway.getUuid()).getResources().contains(resource)) {
+                            edgeDeploys.get(gateway.getUuid()).getResources().add(resource);
+                        }
+                        // adiciona a regra ao deploy
+                        if (edgeDeploys.get(gateway.getUuid()).getRules() == null) {
+                            edgeDeploys.get(gateway.getUuid()).setRules(new ArrayList<>());
+                        }
+                        if (!edgeDeploys.get(gateway.getUuid()).getRules().contains(rule)) {
+                            edgeDeploys.get(gateway.getUuid()).getRules().add(rule);
+                        }
+                    });
+                } else if (rule.getLevel().equals(Level.FOG)) {
+                    // acha os  gateways
+                    List<Gateway> gateways = findGateways(rule.getTagFilter());
+                    ;
+                    // para cada gateway...
+                    gateways.forEach(gateway -> {
+                        if (!fogDeploys.containsKey(gateway.getUuid())) {
+                            // cria um deploy para este gateway
+                            fogDeploys.put(gateway.getUuid(), new Deploy());
+                            fogDeploys.get(gateway.getUuid()).setUuid(UUID.randomUUID().toString());
+                            fogDeploys.get(gateway.getUuid()).setEpn(epn);
+                            fogDeploys.get(gateway.getUuid()).setGateway(gateway);
+                        }
+                        // adiciona a regra ao deploy
+                        if (fogDeploys.get(gateway.getUuid()).getRules() == null) {
+                            fogDeploys.get(gateway.getUuid()).setRules(new ArrayList<>());
+                        }
+                        fogDeploys.get(gateway.getUuid()).getRules().add(rule);
+                    });
+                } else if (rule.getLevel().equals(Level.CLOUD)) {
 
-            }
+                }
 
-        });
+            });
 
-        deploy2FogNodes(fogDeploys);
-        deploy2EdgeNodes(edgeDeploys);
+            deploy2FogNodes(fogDeploys);
+            deploy2EdgeNodes(edgeDeploys);
 
     }
 

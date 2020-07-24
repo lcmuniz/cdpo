@@ -18,16 +18,16 @@ public class BasicFogNodeService {
 
         new Thread(() -> {
 
-            cepService.addEventType("TemperatureH");
-            EPStatement stm = cepService.addRule("select * from TemperatureH");
+            cepService.addEventType("TemperatureG");
+            EPStatement stm = cepService.addRule("select * from TemperatureG");
             stm.addListener((eventBeans, eventBeans1) -> {
-                new Thread(() -> System.out.println("### TemperaturaH - " + eventBeans[0].getUnderlying())).start();
+                new Thread(() -> System.out.println("### TemperaturaG - " + eventBeans[0].getUnderlying())).start();
             });
 
-            cepService.addEventType("TemperatureX");
-            EPStatement stm2 = cepService.addRule("select * from TemperatureX", "TemperatureX");
+            cepService.addEventType("TemperatureH");
+            EPStatement stm2 = cepService.addRule("select * from TemperatureH");
             stm2.addListener((eventBeans, eventBeans1) -> {
-                new Thread(() -> System.out.println("### TemperaturaX - " + eventBeans[0].getUnderlying())).start();
+                new Thread(() -> System.out.println("### TemperaturaH - " + eventBeans[0].getUnderlying())).start();
             });
 
         }).start();
