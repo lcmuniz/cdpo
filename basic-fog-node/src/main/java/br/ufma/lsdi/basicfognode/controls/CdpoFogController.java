@@ -1,7 +1,9 @@
 package br.ufma.lsdi.basicfognode.controls;
 
+import br.ufma.lsdi.basicfognode.models.Deploy;
+import br.ufma.lsdi.basicfognode.models.Resource;
+import br.ufma.lsdi.basicfognode.models.Rule;
 import br.ufma.lsdi.basicfognode.services.CdpoFogService;
-import br.ufma.lsdi.cdpo.*;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;

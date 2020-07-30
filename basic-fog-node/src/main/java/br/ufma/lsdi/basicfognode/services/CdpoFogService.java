@@ -1,9 +1,9 @@
 package br.ufma.lsdi.basicfognode.services;
 
-import br.ufma.lsdi.cdpo.*;
-import com.espertech.esper.client.EPStatement;
+import br.ufma.lsdi.basicfognode.models.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.val;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 import org.springframework.beans.factory.annotation.Value;
@@ -80,7 +80,7 @@ public class CdpoFogService {
      */
     private void sendKeepAlive() {
 
-        Gateway gateway = new Gateway();
+        val gateway = new Gateway();
         gateway.setDn(dn);
         gateway.setLat(120.0);
         gateway.setLon(120.0);
@@ -94,13 +94,13 @@ public class CdpoFogService {
     Inicializa o cliente MQTT.
      */
     private void initMqtt() {
-        MqttConnectOptions mqttOpts = new MqttConnectOptions();
+        val mqttOpts = new MqttConnectOptions();
         mqttOpts.setCleanSession(true);
         mqttOpts.setAutomaticReconnect(true);
         mqttOpts.setConnectionTimeout(30000);
 
-        String tmpDir = System.getProperty("java.io.tmpdir");
-        MqttDefaultFilePersistence dataStore = new MqttDefaultFilePersistence(tmpDir);
+        val tmpDir = System.getProperty("java.io.tmpdir");
+        val dataStore = new MqttDefaultFilePersistence(tmpDir);
 
         try{
             mqttClient = new MqttClient(brokerUrl, dn, dataStore);
@@ -120,9 +120,9 @@ public class CdpoFogService {
                 new Thread(() -> {
                     // recebeu um evento do edge. envia para o Cep processar
                     try {
-                        ObjectMapper mapper = new ObjectMapper();
-                        Map event = mapper.readValue(mqttMessage.getPayload(), Map.class);
-                        String eventType = (String) event.get("eventType");
+                        val mapper = new ObjectMapper();
+                        val event = mapper.readValue(mqttMessage.getPayload(), Map.class);
+                        val eventType = (String) event.get("eventType");
                         cepService.send(event, eventType);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -132,7 +132,7 @@ public class CdpoFogService {
             mqttClient.subscribe( CDPO_DEPLOY_STATUS + "+/+", (topic, mqttMessage) -> {
                 new Thread(() -> {
                     // o topico tem o formato /cdpo/deploy-status/hostUuid/ruleUuid
-                    String[] t = topic.split("/");
+                    val t = topic.split("/");
 
                     // TODO: substituir por objeto DeployedStatus
                     Map<String, Object> deployStatus  = new HashMap<>();
@@ -148,8 +148,8 @@ public class CdpoFogService {
             mqttClient.subscribe(EDGE_KEEP_ALIVE_TOPIC, (topic, mqttMessage) -> {
                 new Thread(() -> {
                     try {
-                        ObjectMapper mapper = new ObjectMapper();
-                        Resource resource = mapper.readValue(mqttMessage.getPayload(), Resource.class);
+                        val mapper = new ObjectMapper();
+                        val resource = mapper.readValue(mqttMessage.getPayload(), Resource.class);
                         postOnIotCataloguer(resource);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -166,10 +166,10 @@ public class CdpoFogService {
      */
     public void sendRuleToEdge(Resource resource, List<Rule> rules) {
 
-        for (Rule rule : rules) {
+        for (val rule : rules) {
             try {
-                ObjectMapper objectMapper = new ObjectMapper();
-                byte[] payload = objectMapper.writeValueAsBytes(rule);
+                val objectMapper = new ObjectMapper();
+                val payload = objectMapper.writeValueAsBytes(rule);
                 publish(CDPO_EDGE_RULE + resource.getUuid(), payload);
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
@@ -189,19 +189,19 @@ public class CdpoFogService {
         if (rule.getTarget().equals(Level.FOG)) {
             // insere os eventos com o nome da regra para que
             // o fog possa processar localmente
-            String insertRule = "insert into " + rule.getName() + " " + rule.getDefinition();
+            val insertRule = "insert into " + rule.getName() + " " + rule.getDefinition();
             cepService.addRule(insertRule, rule.getName());
         }
         else if (rule.getTarget().equals(Level.CLOUD)) {
             // se o resultado da regra deve ser enviada à cloud ...
             // adiciona a regra no CepService e o listener associado
             // que envia os resultados para a forwardUrl (cloud)
-            EPStatement stm = cepService.addRule(rule.getDefinition(), rule.getName());
+            val stm = cepService.addRule(rule.getDefinition(), rule.getName());
             stm.addListener((eventBeans, eventBeans1) -> {
                 new Thread(() -> {
-                    Map event = (Map) eventBeans[0].getUnderlying();
-                    RestTemplate restTemplate = new RestTemplate();
-                    String topic = cdpoComposerUrl + CDPO_COMPOSER_PUBLISH_EVENT + rule.getUuid();
+                    val event = (Map) eventBeans[0].getUnderlying();
+                    val restTemplate = new RestTemplate();
+                    val topic = cdpoComposerUrl + CDPO_COMPOSER_PUBLISH_EVENT + rule.getUuid();
                     restTemplate.postForObject(topic, event, Map.class);
                 }).start();
             });
@@ -216,7 +216,7 @@ public class CdpoFogService {
     Adiciona os event types ao serviço Cep
      */
     private void addEventTypes(Rule rule) {
-        List<EventType> eventTypes = rule.getEventTypes();
+        val eventTypes = rule.getEventTypes();
         eventTypes.forEach(eventType -> cepService.addEventType(eventType));
     }
 
@@ -225,14 +225,14 @@ public class CdpoFogService {
     */
     private void postOnIotCataloguer(Resource resource) {
 
-        HttpHeaders headers = new HttpHeaders();
+        val headers = new HttpHeaders();
         headers.set(HEADER_DN_KEY, dn);
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<Resource> entity = new HttpEntity<>(resource, headers);
+        val entity = new HttpEntity<>(resource, headers);
 
-        RestTemplate restTemplate = new RestTemplate();
+        val restTemplate = new RestTemplate();
         restTemplate.postForObject(iotCataloguerUrl + IOT_CATALOGUER_GATEWAY_RELATE, entity, Resource.class);
 
     }
@@ -242,14 +242,14 @@ public class CdpoFogService {
     */
     private void postOnIotCataloguer(Gateway gateway) {
 
-        HttpHeaders headers = new HttpHeaders();
+        val headers = new HttpHeaders();
         headers.set(HEADER_DN_KEY, dn);
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<Gateway> entity = new HttpEntity<>(gateway, headers);
+        val entity = new HttpEntity<>(gateway, headers);
 
-        RestTemplate restTemplate = new RestTemplate();
+        val restTemplate = new RestTemplate();
         restTemplate.postForObject(iotCataloguerUrl + IOT_CATALOGUER_GATEWAY, entity, Gateway.class);
 
     }
@@ -259,7 +259,7 @@ public class CdpoFogService {
      */
     public void publish(String topic, byte[] payload) {
         try{
-            MqttMessage message = new MqttMessage();
+            val message = new MqttMessage();
             message.setQos(0);
             message.setPayload(payload);
             mqttClient.publish(topic, message);

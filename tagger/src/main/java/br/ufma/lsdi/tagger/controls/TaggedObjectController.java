@@ -1,14 +1,12 @@
 package br.ufma.lsdi.tagger.controls;
 
-import br.ufma.lsdi.cdpo.ObjectType;
-import br.ufma.lsdi.cdpo.TaggedObject;
-import br.ufma.lsdi.cdpo.TaggedObjectFilter;
+import br.ufma.lsdi.tagger.entities.TaggedObject;
+import br.ufma.lsdi.tagger.entities.TaggedObjectFilter;
 import br.ufma.lsdi.tagger.repos.ObjectTypeRepository;
 import br.ufma.lsdi.tagger.repos.TaggedObjectRepository;
 import br.ufma.lsdi.tagger.services.TaggedObjectService;
-import org.springframework.http.HttpStatus;
+import lombok.val;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
@@ -34,8 +32,7 @@ public class TaggedObjectController {
      */
     @GetMapping
     public List<TaggedObject> find() {
-        List<TaggedObject> obs = repo.findAll();
-        return obs;
+        return repo.findAll();
     }
 
     /*
@@ -43,9 +40,8 @@ public class TaggedObjectController {
     Ex: /tagged-object/90a268cf-853c-4a5b-856d-e591a4e2467b
      */
     @GetMapping("{uuid}")
-    public TaggedObject get(@PathVariable("uuid") String uuid) {
-        TaggedObject to = findTaggedObject(uuid);
-        return to;
+    public Optional<TaggedObject> get(@PathVariable("uuid") String uuid) {
+        return repo.findById(uuid);
     }
 
     /*
@@ -55,29 +51,18 @@ public class TaggedObjectController {
      */
     @PostMapping
     public TaggedObject save(@RequestBody TaggedObject taggedObject) {
+        val aSalvar = new TaggedObject();
         if (taggedObject.getUuid() == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Object Type UUID is Required");
-        }
-
-        Optional<TaggedObject> opt = repo.findById(taggedObject.getUuid());
-
-        TaggedObject to;
-        if (opt.isPresent()) {
-            to = opt.get();
+            aSalvar.setUuid(UUID.randomUUID().toString());
         }
         else {
-            to = new TaggedObject();
-            to.setUuid(taggedObject.getUuid());
+            aSalvar.setUuid(taggedObject.getUuid());
         }
-        // testa se o object type foi passado na requisição
-        if (taggedObject.getObjectType() != null) {
-            // se sim, busca o object type no banco e preenche no tagged object
-            ObjectType ot = findObjectType(taggedObject.getObjectType().getUuid());
-            to.setObjectType(ot);
-        }
-        if (taggedObject.getTags() != null) to.setTags(taggedObject.getTags());
-        repo.save(to);
-        return to;
+
+        if(taggedObject.getObjectType() != null) aSalvar.setObjectType(taggedObject.getObjectType());
+        if(taggedObject.getTags() != null) aSalvar.setTags(taggedObject.getTags());
+
+        return repo.save(taggedObject);
     }
 
     /*
@@ -85,33 +70,7 @@ public class TaggedObjectController {
      */
     @PostMapping("tag-expression")
     public List<TaggedObject> findbyExpression(@RequestBody TaggedObjectFilter expression) {
-        List<TaggedObject> tos = serv.find(expression);
-        return tos;
-    }
-
-    /*
-    Retorna um tagged object da base de dados identificado  pelo UUID passado como parâmetro.
-    Se o tagged object não existir, gera uma exceção HTTP 404
-     */
-    private TaggedObject findTaggedObject(String uuid) {
-        Optional<TaggedObject> opt = repo.findById(uuid);
-        if (!opt.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Tagged Object Not Found");
-        }
-        return opt.get();
-    }
-
-    /*
-    Retorna um object type da base de dados identificado  pelo UUID passado como parâmetro.
-    Se o object type não existir, gera uma exceção HTTP 404
-     */
-    private ObjectType findObjectType(String uuid) {
-        try {
-            return otRepo.findById(uuid).get();
-        }
-        catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Object Type Not Found");
-        }
+        return serv.find(expression);
     }
 
 }

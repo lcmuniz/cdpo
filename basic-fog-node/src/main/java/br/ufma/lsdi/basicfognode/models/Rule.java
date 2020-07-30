@@ -1,13 +1,11 @@
-package br.ufma.lsdi.cdpo;
+package br.ufma.lsdi.basicfognode.models;
 
 import lombok.Data;
-import org.springframework.data.annotation.Id;
 
 import java.util.List;
 
 @Data
 public class Rule {
-    @Id
     private String uuid;
     private String name;
     private String description;

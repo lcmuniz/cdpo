@@ -1,15 +1,15 @@
 package br.ufma.lsdi.iotcataloguer.controls;
 
-import br.ufma.lsdi.cdpo.*;
+import br.ufma.lsdi.iotcataloguer.entities.*;
 import br.ufma.lsdi.iotcataloguer.repos.GatewayRepository;
 import br.ufma.lsdi.iotcataloguer.repos.GatewayResourceRepository;
 import br.ufma.lsdi.iotcataloguer.repos.ResourceRepository;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
@@ -43,18 +43,13 @@ public class GatewayController {
     }
 
     @GetMapping("dn")
-    public Gateway getByDn(@RequestHeader("${iotcataloguer.dnattribute}") String dn) {
-        Optional<Gateway> opt = gRepo.findByDn(dn);
-        if (!opt.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Gateway Not Found");
-        }
-        return opt.get();
+    public Optional<Gateway> getByDn(@RequestHeader("${iotcataloguer.dnattribute}") String dn) {
+        return gRepo.findByDn(dn);
     }
 
     @PostMapping
     public Gateway save(@RequestBody Gateway gateway, @RequestHeader("${iotcataloguer.dnattribute}") String dn) {
-
-        Optional<Gateway> opt = gRepo.findByDn(dn);
+        val opt = gRepo.findByDn(dn);
         Gateway g;
         if (opt.isPresent()) {
             g = opt.get();
@@ -67,8 +62,7 @@ public class GatewayController {
         if (gateway.getLat() != null) g.setLat(gateway.getLat());
         if (gateway.getLon() != null) g.setLon(gateway.getLon());
         if (gateway.getUrl() != null) g.setUrl(gateway.getUrl());
-        gRepo.save(g);
-        return g;
+        return gRepo.save(g);
     }
 
     @GetMapping("resources")
@@ -79,37 +73,58 @@ public class GatewayController {
     @PostMapping("relate")
     public GatewayResource relate(@RequestBody Resource resource, @RequestHeader("${iotcataloguer.dnattribute}") String dn) {
 
-        Optional<Gateway> optg = gRepo.findByDn(dn);
+        val optg = gRepo.findByDn(dn);
         if (!optg.isPresent()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Gateway Not Found");
         }
-        Gateway gateway = optg.get();
+        val gateway = optg.get();
 
-        rRepo.save(resource);
+        val aSalvar = new Resource();
+        if (resource.getUuid() == null) {
+            // se uuid do recurso nao esta presente, cria um novo recurso
+            aSalvar.setUuid(UUID.randomUUID().toString());
+        }
+        else {
+            aSalvar.setUuid(resource.getUuid());
+            // se uuid esta presente na requisicao, busca no banco
+            val optr = rRepo.findById(resource.getUuid());
+            if (optr.isPresent()) {
+                // se encontrou no banco
+                aSalvar.setName(optr.get().getName());
+                aSalvar.setLat(optr.get().getLat());
+                aSalvar.setLon(optr.get().getLon());
+            }
+        }
 
-        GatewayResource gatewayResource = new GatewayResource();
+        // atualiza os campos do recurso a salvar
+        if (resource.getName() != null) aSalvar.setName(resource.getName());
+        if (resource.getLat() != null) aSalvar.setLat(resource.getLat());
+        if (resource.getLon() != null) aSalvar.setLon(resource.getLon());
+
+        resource = rRepo.save(aSalvar);
+
+        val gatewayResource = new GatewayResource();
         gatewayResource.setUuid(UUID.randomUUID().toString());
         gatewayResource.setTimestamp(LocalDateTime.now());
         gatewayResource.setGateway(gateway);
         gatewayResource.setResource(resource);
 
-        grRepo.save(gatewayResource);
-        return gatewayResource;
+        return grRepo.save(gatewayResource);
     }
 
     @PostMapping("expression")
     public List<Gateway> getByExpression(@RequestBody String expression) {
-        ObjectType ot = new ObjectType();
+        val ot = new ObjectType();
         ot.setType("FogNode");
-        TaggedObjectFilter filter = new TaggedObjectFilter();
+        val filter = new TaggedObjectFilter();
         filter.setObjectType(ot);
         filter.setExpression(expression);
 
-        RestTemplate restTemplate = new RestTemplate();
-        HttpEntity<TaggedObjectFilter> request = new HttpEntity<>(filter);
+        val restTemplate = new RestTemplate();
+        val request = new HttpEntity<>(filter);
 
-        ResponseEntity<List<TaggedObject>> response = restTemplate.exchange(taggerUrl + "/tagger/tagged-object/tag-expression", HttpMethod.POST, request, new ParameterizedTypeReference<List<TaggedObject>>() {});
-        List<String> uuids = response.getBody().stream().map(to -> to.getUuid()).collect(Collectors.toList());
+        val response = restTemplate.exchange(taggerUrl + "/tagger/tagged-object/tag-expression", HttpMethod.POST, request, new ParameterizedTypeReference<List<TaggedObject>>() {});
+        val uuids = response.getBody().stream().map(to -> to.getUuid()).collect(Collectors.toList());
 
         return gRepo.findAllByUuidIn(uuids);
 

@@ -1,12 +1,11 @@
 package br.ufma.lsdi.basicedgenode.services;
 
-import br.ufma.lsdi.cdpo.EventType;
-import br.ufma.lsdi.cdpo.Level;
-import br.ufma.lsdi.cdpo.Resource;
-import br.ufma.lsdi.cdpo.Rule;
-import com.espertech.esper.client.EPStatement;
+import br.ufma.lsdi.basicedgenode.models.Level;
+import br.ufma.lsdi.basicedgenode.models.Resource;
+import br.ufma.lsdi.basicedgenode.models.Rule;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.val;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 import org.slf4j.Logger;
@@ -61,19 +60,19 @@ public class CdpoEdgeService {
      */
     private void initKeepAliveTask() {
 
-        Resource resource = new Resource();
+        val resource = new Resource();
         resource.setUuid(clientUuid);
         resource.setName(edgeName);
         resource.setLat(300.0);  // esses valores de lat e lon devem vir de um serviço de localização
         resource.setLon(200.0);
 
-        ObjectMapper mapper = new ObjectMapper();
+        val mapper = new ObjectMapper();
 
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
                 try {
-                    byte[] payload = mapper.writeValueAsBytes(resource);
+                    val payload = mapper.writeValueAsBytes(resource);
                     publish(EDGE_KEEP_ALIVE_TOPIC, payload);
                     logger.debug(String.format("%s published to %s.", resource, EDGE_KEEP_ALIVE_TOPIC));
                 } catch (JsonProcessingException e) {
@@ -88,20 +87,20 @@ public class CdpoEdgeService {
     Subscreve-se no tópico cdpo/edge-rule para receber as regras do cdpo
      */
     private void initMqtt() {
-        MqttConnectOptions mqttOpts = new MqttConnectOptions();
+        val mqttOpts = new MqttConnectOptions();
         mqttOpts.setCleanSession(true);
         mqttOpts.setAutomaticReconnect(true);
         mqttOpts.setConnectionTimeout(30000);
 
-        String tmpDir = System.getProperty("java.io.tmpdir");
-        MqttDefaultFilePersistence dataStore = new MqttDefaultFilePersistence(tmpDir);
+        val tmpDir = System.getProperty("java.io.tmpdir");
+        val dataStore = new MqttDefaultFilePersistence(tmpDir);
 
         try{
             mqttClient = new MqttClient(brokerUrl, clientUuid, dataStore);
             mqttClient.connect(mqttOpts);
 
             // subscreve o tópico /cdepo/edge-rule para receber regras do cdpo
-            String topic = CDPO_EDGE_RULE + clientUuid;
+            val topic = CDPO_EDGE_RULE + clientUuid;
             mqttClient.subscribe(topic, (s, mqttMessage) -> {
                 // o callback executa em uma thread separada para não bloquear a aplicação
                 new Thread(() -> {
@@ -111,9 +110,9 @@ public class CdpoEdgeService {
                     if (topic.contains(CDPO_EDGE_RULE)) {
                         try {
                             // recebe a regra
-                            String payload = new String(mqttMessage.getPayload());
-                            ObjectMapper mapper = new ObjectMapper();
-                            Rule rule = mapper.readValue(payload, Rule.class);
+                            val payload = new String(mqttMessage.getPayload());
+                            val mapper = new ObjectMapper();
+                            val rule = mapper.readValue(payload, Rule.class);
 
                             // adiciona à engine Cep
                             addEdgeRule(rule);
@@ -144,7 +143,7 @@ public class CdpoEdgeService {
 
         if (rule.getTarget().equals(Level.EDGE)) {
             // ... inclui o insert antes da regra para gerar os novos eventos
-            String insertEPL = "insert into " + rule.getName() + " " + rule.getDefinition();
+            val insertEPL = "insert into " + rule.getName() + " " + rule.getDefinition();
 
             // adiciona a regra para processamento local
             cepService.addRule(insertEPL, rule.getName());
@@ -153,17 +152,17 @@ public class CdpoEdgeService {
             if (rule.getTarget().equals(Level.FOG)) {
 
                 // adiciona a regra para processamento na fog (via o listener)
-                EPStatement stm = cepService.addRule(rule.getDefinition(), rule.getName());
+                val stm = cepService.addRule(rule.getDefinition(), rule.getName());
 
                 // ... se subscreve no statement para receber os eventos gerados pela regra de insert...
                 stm.addListener((eventBeans, eventBeans1) -> {
                     // o listener executa em uma thread separada para não bloquear a aplicação
                     new Thread(() -> {
-                        Map object = (Map) eventBeans[0].getUnderlying();
+                        val object = (Map) eventBeans[0].getUnderlying();
                         object.put("eventType", rule.getName());
                         try {
-                            ObjectMapper mapper = new ObjectMapper();
-                            String topic = CDPO_EDGE_EVENT + clientUuid + "/" + rule.getUuid();
+                            val mapper = new ObjectMapper();
+                            val topic = CDPO_EDGE_EVENT + clientUuid + "/" + rule.getUuid();
                             // envia os eventos do Cep para o cdpo via MQTT
                             publish(topic, mapper.writeValueAsBytes(object));
                         } catch (JsonProcessingException e) {
@@ -181,7 +180,7 @@ public class CdpoEdgeService {
     Adciona os event types da regra.
      */
     private void addEventTypes(Rule rule) {
-        List<EventType> eventTypes = rule.getEventTypes();
+        val eventTypes = rule.getEventTypes();
         eventTypes.forEach(eventType -> cepService.addEventType(eventType));
     }
 
@@ -190,7 +189,7 @@ public class CdpoEdgeService {
      */
     private void publish(String topic, byte[] payload) {
         try{
-            MqttMessage message = new MqttMessage();
+            val message = new MqttMessage();
             message.setQos(0);
             message.setPayload(payload);
             mqttClient.publish(topic, message);

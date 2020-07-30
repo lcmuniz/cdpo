@@ -1,10 +1,12 @@
-package br.ufma.lsdi.cdpo;
-
+package br.ufma.lsdi.iotcataloguer.entities;
 
 import lombok.Data;
-import org.springframework.data.annotation.Id;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 @Data
+@Entity
 public class Gateway {
     @Id
     private String uuid;

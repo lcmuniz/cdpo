@@ -1,12 +1,10 @@
-package br.ufma.lsdi.cdpo;
+package br.ufma.lsdi.basicfognode.models;
 
 
 import lombok.Data;
-import org.springframework.data.annotation.Id;
 
 @Data
 public class Gateway {
-    @Id
     private String uuid;
     private String dn;
     private Double lat;

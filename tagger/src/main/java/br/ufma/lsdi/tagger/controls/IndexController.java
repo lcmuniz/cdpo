@@ -1,5 +1,6 @@
 package br.ufma.lsdi.tagger.controls;
 
+import lombok.val;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,7 +19,7 @@ public class IndexController {
      */
     @GetMapping
     public Map index() {
-        Map map = new HashMap();
+        val map = new HashMap();
         map.put("service-name", "tagger");
         return map;
     }

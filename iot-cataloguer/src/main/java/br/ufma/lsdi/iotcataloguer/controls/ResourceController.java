@@ -1,19 +1,17 @@
 package br.ufma.lsdi.iotcataloguer.controls;
 
-import br.ufma.lsdi.cdpo.*;
+import br.ufma.lsdi.iotcataloguer.entities.*;
 import br.ufma.lsdi.iotcataloguer.repos.GatewayRepository;
 import br.ufma.lsdi.iotcataloguer.repos.GatewayResourceRepository;
 import br.ufma.lsdi.iotcataloguer.repos.ResourceRepository;
 import br.ufma.lsdi.iotcataloguer.services.ResourceService;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -48,28 +46,28 @@ public class ResourceController {
     }
 
     @PostMapping
-    public Resource insert(@RequestBody Resource resource) {
-        resource.setUuid(UUID.randomUUID().toString());
-        rRepo.save(resource);
-        return resource;
-    }
+    public Resource save (@RequestBody Resource resource) {
+        val aSalvar  = new Resource();
+        if (resource.getUuid() == null) {
+            aSalvar.setUuid(UUID.randomUUID().toString());
+        }
+        else {
+            aSalvar.setUuid(resource.getUuid());
+        }
 
-    @PutMapping("{uuid}")
-    public Resource update(@PathVariable("uuid") String uuid, @RequestBody Resource resource) {
-        Resource r = find(uuid);
-        if (resource.getName() != null) r.setName(resource.getName());
-        if (resource.getLat() != null) r.setLat(resource.getLat());
-        if (resource.getLon() != null) r.setLon(resource.getLon());
-        rRepo.save(r);
-        return r;
+        if(resource.getName() != null) aSalvar.setName(resource.getName());
+        if(resource.getLat() != null) aSalvar.setLat(resource.getLat());
+        if(resource.getLon() != null) aSalvar.setLon(resource.getLon());
+
+        return rRepo.save(resource);
     }
 
     @GetMapping("/{uuid}/last-gateway")
     public Gateway getGateways(@PathVariable("uuid") String uuid) {
-        List<GatewayResource> list = grRepo.findAllByResource_UuidOrderByTimestampDesc(uuid);
+        val list = grRepo.findAllByResource_UuidOrderByTimestampDesc(uuid);
         if (list.size() > 0) {
-            GatewayResource gr = list.get(0);
-            Optional<Gateway> opt = gRepo.findById(gr.getGateway().getUuid());
+            val gr = list.get(0);
+            val opt = gRepo.findById(gr.getGateway().getUuid());
             if (opt.isPresent()) {
                 return opt.get();
             }
@@ -79,30 +77,20 @@ public class ResourceController {
 
     @PostMapping("expression")
     public List<Resource> getByExpression(@RequestBody String expression) {
-        ObjectType ot = new ObjectType();
+        val ot = new ObjectType();
         ot.setType("EdgeNode");
-        TaggedObjectFilter filter = new TaggedObjectFilter();
+        val filter = new TaggedObjectFilter();
         filter.setObjectType(ot);
         filter.setExpression(expression);
 
-        RestTemplate restTemplate = new RestTemplate();
-        HttpEntity<TaggedObjectFilter> request = new HttpEntity<>(filter);
+        val restTemplate = new RestTemplate();
+        val request = new HttpEntity<>(filter);
 
-        ResponseEntity<List<TaggedObject>> response = restTemplate.exchange(taggerUrl + "/tagger/tagged-object/tag-expression", HttpMethod.POST, request, new ParameterizedTypeReference<List<TaggedObject>>() {});
-        List<String> uuids = response.getBody().stream().map(to -> to.getUuid()).collect(Collectors.toList());
+        val response = restTemplate.exchange(taggerUrl + "/tagger/tagged-object/tag-expression", HttpMethod.POST, request, new ParameterizedTypeReference<List<TaggedObject>>() {});
+        val uuids = response.getBody().stream().map(to -> to.getUuid()).collect(Collectors.toList());
 
         return resourceService.findAllByUuidInWithLastGateway(uuids);
 
     }
-
-    private Resource find(String uuid) {
-        try {
-            return rRepo.findById(uuid).get();
-        }
-        catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource Not Found");
-        }
-    }
-
 
 }

@@ -1,4 +1,4 @@
-package br.ufma.lsdi.cdpo;
+package br.ufma.lsdi.iotcataloguer.entities;
 
 import lombok.Data;
 

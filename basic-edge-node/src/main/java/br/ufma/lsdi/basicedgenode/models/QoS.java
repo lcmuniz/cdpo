@@ -1,4 +1,4 @@
-package br.ufma.lsdi.basicfognode.models;
+package br.ufma.lsdi.basicedgenode.models;
 
 public enum QoS {
     AT_MOST_ONCE("at_most_once"),

@@ -1,14 +1,15 @@
 package br.ufma.lsdi.tagger.services;
 
-import br.ufma.lsdi.cdpo.TaggedObject;
-import br.ufma.lsdi.cdpo.TaggedObjectFilter;
-import br.ufma.lsdi.tagger.parsers.ParserExpression;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.BasicQuery;
+import br.ufma.lsdi.tagger.entities.TaggedObject;
+import br.ufma.lsdi.tagger.entities.TaggedObjectFilter;
+import br.ufma.lsdi.tagger.repos.TaggedObjectRepository;
+import lombok.val;
+import lombok.var;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.util.*;
 
 /*
 Classe de serviço com métodos para buscas
@@ -17,10 +18,13 @@ personalizadas dos tagged objects.
 @Service
 public class TaggedObjectService {
 
-    private final MongoTemplate template;
+    @PersistenceContext
+    private EntityManager entityManager;
 
-    public TaggedObjectService(MongoTemplate template) {
-        this.template = template;
+    private final TaggedObjectRepository repo;
+
+    public TaggedObjectService(TaggedObjectRepository repo) {
+        this.repo = repo;
     }
 
     /*
@@ -29,21 +33,33 @@ public class TaggedObjectService {
     utilizadas como parâmetros de busca.
      */
     public List<TaggedObject> find(TaggedObjectFilter filter) {
-        List exps = new ArrayList();
+        String type = null;
+        String expression = null;
+
         if (filter.getObjectType() != null) {
-            String type = "'objectType.type': '" + filter.getObjectType().getType() + "'";
-            exps.add(type);
+            type = "type = '" + filter.getObjectType().getType() + "'";
         }
-        if (filter.getExpression() != null) {
-            // faz o parse da expressão para o formato do MongoDB.
-            String expression = ParserExpression.parse(filter.getExpression());
-            exps.add(expression);
+        if (filter.getExpression() !=null) {
+            expression = filter.getExpression();
+            val array = expression.split(" ");
+
+            Map<String, String> m = new HashMap<>();
+            Arrays.stream(array).forEach(s -> {
+                if (!s.equals("and") && !s.equals("or") && !s.equals("not")) {
+                    m.put(s, "(tags like '%" + s + "%')");
+                }
+            });
+            for (val s : m.keySet()) {
+                expression = expression.replaceAll(s, m.get(s));
+            }
         }
 
-        String exp = "{"+String.join(",", exps)+"}";
+        String sql = null;
+        if (type == null && expression == null) sql = "select * from tagged_object";
+        if (type == null && expression != null) sql = "select * from tagged_object where " + expression;
+        if (type != null && expression == null) sql = "select * from tagged_object tob join object_type ot on tob.object_type_uuid = ot.uuid where " + type;
+        if (type != null && expression != null) sql = "select * from tagged_object tob join object_type ot on tob.object_type_uuid = ot.uuid where " + type + " and " + expression;
 
-        BasicQuery _query = new BasicQuery(exp);
-        List<TaggedObject> obs = template.find(_query, TaggedObject.class);
-        return obs;
+        return entityManager.createNativeQuery(sql, TaggedObject.class).getResultList();
     }
 }

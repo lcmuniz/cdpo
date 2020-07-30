@@ -1,12 +1,9 @@
 package br.ufma.lsdi.tagger.controls;
 
-import br.ufma.lsdi.cdpo.ObjectType;
+import br.ufma.lsdi.tagger.entities.ObjectType;
 import br.ufma.lsdi.tagger.repos.ObjectTypeRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
+import lombok.val;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,8 +27,7 @@ public class ObjectTypeController {
      */
     @GetMapping
     public List<ObjectType> find() {
-        List<ObjectType> obs = repo.findAll();
-        return obs;
+        return repo.findAll();
     }
 
     /*
@@ -39,9 +35,8 @@ public class ObjectTypeController {
     Ex: /object-type/90a268cf-853c-4a5b-856d-e591a4e2467b
      */
     @GetMapping("{uuid}")
-    public ObjectType get(@PathVariable("uuid") String uuid) {
-        ObjectType obj = findObjectType(uuid);
-        return obj;
+    public Optional<ObjectType> get(@PathVariable("uuid") String uuid) {
+        return repo.findById(uuid);
     }
 
     /*
@@ -50,55 +45,30 @@ public class ObjectTypeController {
     Ex: /object-type/Resource
      */
     @GetMapping("type/{type}")
-    public ObjectType findbyType(@PathVariable("type") String type) {
-        Optional<ObjectType> opt = repo.findByType(type);
-        if (!opt.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Object Type Not Found");
-        }
-        return opt.get();
+    public Optional<ObjectType> findbyType(@PathVariable("type") String type) {
+        return repo.findByType(type);
     }
 
     /*
-    Insere um novo object type no banco de dados.
+    Insere ou atualiza um object type no banco de dados.
     Os dados são passados no corpo da requisição POST.
-    Retorna o novo object type cadastrado.
+    Retorna o object type.
      */
     @PostMapping
-    public ObjectType insert(@RequestBody ObjectType objectType) {
-        // gera um UUID único para o novo object type
-        objectType.setUuid(UUID.randomUUID().toString());
-        repo.save(objectType);
-        return objectType;
-    }
+    public ObjectType save(@RequestBody ObjectType objectType) {
 
-    /*
-    Atualiza um object type identificado pelo UUID passado como parâmetro.
-    Os dados a serem atualizados são passados no corpo da requisição PUT.
-    Ex: /object-type/90a268cf-853c-4a5b-856d-e591a4e2467b
-    Retorna o object type atualizado.
-     */
-    @PutMapping("{uuid}")
-    public ObjectType update(@PathVariable("uuid") String uuid, @RequestBody ObjectType objectType) {
-        ObjectType ot = findObjectType(uuid);
-
-        // testa cada campo para ver se foram passados na requisição.
-        // dessa forma, só atualiza os campos que foram enviados.
-        if (objectType.getType() != null) ot.setType(objectType.getType());
-        if (objectType.getProviderUrl() != null) ot.setProviderUrl(objectType.getProviderUrl());
-        repo.save(ot);
-        return ot;
-    }
-
-    /*
-    Retorna um object type da base de dados identificado  pelo UUID passado como parâmetro.
-    Se o object type não existir, gera uma exceção HTTP 404
-     */
-    private ObjectType findObjectType(String uuid) {
-        Optional<ObjectType> opt = repo.findById(uuid);
-        if (!opt.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Object Type Not Found");
+        val aSalvar = new ObjectType();
+        if (objectType.getUuid() == null) {
+            aSalvar.setUuid(UUID.randomUUID().toString());
         }
-        return opt.get();
+        else {
+            aSalvar.setUuid(objectType.getUuid());
+        }
+
+        if (objectType.getType() != null) aSalvar.setType(objectType.getType());
+        if (objectType.getProviderUrl() != null) aSalvar.setProviderUrl(objectType.getProviderUrl());
+
+        return repo.save(aSalvar);
     }
 
 }

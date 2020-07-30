@@ -1,15 +1,16 @@
-package br.ufma.lsdi.cdpo;
+package br.ufma.lsdi.tagger.entities;
 
 import lombok.Data;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
-
-import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 @Data
+@Entity
 public class TaggedObject {
     @Id
     private String uuid;
+    @ManyToOne
     private ObjectType objectType;
-    private List<String> tags;
+    private String tags;
 }

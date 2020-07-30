@@ -1,10 +1,7 @@
 package br.ufma.lsdi.tagger.repos;
 
-import br.ufma.lsdi.cdpo.TaggedObject;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import br.ufma.lsdi.tagger.entities.TaggedObject;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface TaggedObjectRepository extends MongoRepository<TaggedObject, String> {
-
-
-
+public interface TaggedObjectRepository extends JpaRepository<TaggedObject, String> {
 }

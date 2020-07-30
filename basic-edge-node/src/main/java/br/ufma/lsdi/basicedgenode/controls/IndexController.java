@@ -1,5 +1,6 @@
 package br.ufma.lsdi.basicedgenode.controls;
 
+import lombok.val;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,7 +18,7 @@ public class IndexController {
      */
     @GetMapping
     public Map index() {
-        Map map = new HashMap();
+        val map = new HashMap();
         map.put("app-name", "basic-edge-node");
         return map;
     }

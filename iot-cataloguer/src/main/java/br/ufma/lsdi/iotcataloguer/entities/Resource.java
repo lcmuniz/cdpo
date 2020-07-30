@@ -1,16 +1,20 @@
-package br.ufma.lsdi.cdpo;
+package br.ufma.lsdi.iotcataloguer.entities;
 
 import lombok.Data;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Transient;
 
 @Data
+@Entity
 public class Resource {
     @Id
     private String uuid;
     private String name;
     private Double lat;
     private Double lon;
+    @Transient
     private Gateway lastGateway;
 
 }

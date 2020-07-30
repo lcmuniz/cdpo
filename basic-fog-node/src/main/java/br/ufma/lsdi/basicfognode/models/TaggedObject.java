@@ -1,14 +1,11 @@
-package br.ufma.lsdi.cdpo;
+package br.ufma.lsdi.basicfognode.models;
 
 import lombok.Data;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
 
 import java.util.List;
 
 @Data
 public class TaggedObject {
-    @Id
     private String uuid;
     private ObjectType objectType;
     private List<String> tags;

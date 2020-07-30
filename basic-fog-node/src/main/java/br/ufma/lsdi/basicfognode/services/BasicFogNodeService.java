@@ -1,9 +1,7 @@
 package br.ufma.lsdi.basicfognode.services;
 
-import com.espertech.esper.client.EPStatement;
+import lombok.val;
 import org.springframework.stereotype.Service;
-
-import java.util.Properties;
 
 /*
 Esta classe simula o processamento deste Fog Node
@@ -19,13 +17,13 @@ public class BasicFogNodeService {
         new Thread(() -> {
 
             cepService.addEventType("TemperatureG");
-            EPStatement stm = cepService.addRule("select * from TemperatureG");
+            val stm = cepService.addRule("select * from TemperatureG");
             stm.addListener((eventBeans, eventBeans1) -> {
                 new Thread(() -> System.out.println("### TemperaturaG - " + eventBeans[0].getUnderlying())).start();
             });
 
             cepService.addEventType("TemperatureH");
-            EPStatement stm2 = cepService.addRule("select * from TemperatureH");
+            val stm2 = cepService.addRule("select * from TemperatureH");
             stm2.addListener((eventBeans, eventBeans1) -> {
                 new Thread(() -> System.out.println("### TemperaturaH - " + eventBeans[0].getUnderlying())).start();
             });

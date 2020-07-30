@@ -1,14 +1,14 @@
 package br.ufma.lsdi.basicfognode.services;
 
+import br.ufma.lsdi.basicfognode.models.EventType;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
-import com.espertech.esper.client.EventType;
+import lombok.val;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 /*
 Serviço de CEP
@@ -29,7 +29,7 @@ public class CepService {
     Adciona um tipo de evento para ser reconhecido pelo engine Cep
      */
     public void addEventType(String eventTypeName) {
-        br.ufma.lsdi.cdpo.EventType et = new br.ufma.lsdi.cdpo.EventType();
+        val et = new EventType();
         et.setName(eventTypeName);
         et.setAttributes(null);
         addEventType(et);
@@ -38,15 +38,15 @@ public class CepService {
     /*
     Adciona um tipo de evento e seus atributos para ser reconhecido pelo engine Cep
      */
-    public void addEventType(br.ufma.lsdi.cdpo.EventType eventType) {
+    public void addEventType(EventType eventType) {
 
         // coloca todos as atributos em um map
         // para passar para o engine cep
-        Map map = new HashMap();
+        val map = new HashMap();
         if (eventType.getAttributes() != null) {
             eventType.getAttributes().forEach(attribute -> {
                 try {
-                    Class clazz = Class.forName(attribute.getType());
+                    val clazz = Class.forName(attribute.getType());
                     map.put(attribute.getName(), clazz);
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
@@ -63,7 +63,7 @@ public class CepService {
      */
     public void addEventType(String eventTypeName, Map attributesMap) {
 
-        EventType et = engine.getEPAdministrator().getConfiguration().getEventType(eventTypeName);
+        val et = engine.getEPAdministrator().getConfiguration().getEventType(eventTypeName);
         if (et == null) {
             engine.getEPAdministrator().getConfiguration().addEventType(eventTypeName, attributesMap);
         }
