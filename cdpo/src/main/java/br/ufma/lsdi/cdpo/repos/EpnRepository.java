@@ -1,7 +1,8 @@
 package br.ufma.lsdi.cdpo.repos;
 
-import br.ufma.lsdi.cdpo.Epn;
-import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface EpnRepository extends MongoRepository<Epn, String> {
+import br.ufma.lsdi.cdpo.entities.Epn;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface EpnRepository extends JpaRepository<Epn, String> {
 }

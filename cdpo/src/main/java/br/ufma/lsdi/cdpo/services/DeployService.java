@@ -1,11 +1,12 @@
 package br.ufma.lsdi.cdpo.services;
 
-import br.ufma.lsdi.cdpo.*;
+import br.ufma.lsdi.cdpo.entities.*;
+import br.ufma.lsdi.cdpo.repos.DeployRepository;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -19,6 +20,12 @@ public class DeployService {
 
     @Value("${cdpo.iotcataloguer.url}")
     private String iotCataloguerUrl;
+
+    private DeployRepository deployRepository;
+
+    public DeployService(DeployRepository deployRepository) {
+        this.deployRepository = deployRepository;
+    }
 
     /*
     Faz o deploy de uma EPN para os fog e edge nodes.
@@ -38,12 +45,12 @@ public class DeployService {
 
                 if (rule.getLevel().equals(Level.EDGE)) {
                     // acha os edges
-                    List<Resource> resources = findResources(rule.getTagFilter());
-                    ;
+                    val resources = findResources(rule.getTagFilter());
+
                     // para cada edge ...
                     resources.forEach(resource -> {
                         // pega o ultimo gateway
-                        Gateway gateway = resource.getLastGateway();
+                        val gateway = resource.getLastGateway();
                         if (!edgeDeploys.containsKey(gateway.getUuid())) {
                             // cria um deploy para este gateway
                             edgeDeploys.put(gateway.getUuid(), new Deploy());
@@ -68,8 +75,8 @@ public class DeployService {
                     });
                 } else if (rule.getLevel().equals(Level.FOG)) {
                     // acha os  gateways
-                    List<Gateway> gateways = findGateways(rule.getTagFilter());
-                    ;
+                    val gateways = findGateways(rule.getTagFilter());
+
                     // para cada gateway...
                     gateways.forEach(gateway -> {
                         if (!fogDeploys.containsKey(gateway.getUuid())) {
@@ -99,8 +106,13 @@ public class DeployService {
     // faz o deloy enviando para cada gateway suas regras
     private void deploy2FogNodes(Map<String, Deploy> fogDeploys) {
         fogDeploys.forEach((uuids, deploy) -> {
-            RestTemplate restTemplate = new RestTemplate();
-            HttpEntity<Deploy> request = new HttpEntity<>(deploy);
+
+            deploy.getRules().stream().forEach(r -> r.setEpn(deploy.getEpn()));
+            deployRepository.save(deploy);
+            deploy.getRules().stream().forEach(r -> r.setEpn(null));
+
+            val restTemplate = new RestTemplate();
+            val request = new HttpEntity<>(deploy);
             restTemplate.exchange(deploy.getGateway().getUrl() + "/deploy-fog", HttpMethod.POST, request, new ParameterizedTypeReference<Deploy>() {});
         });
     }
@@ -108,28 +120,31 @@ public class DeployService {
     // faz o deloy enviando para cada gateway as regras de seus edges
     private void deploy2EdgeNodes(Map<String, Deploy> edgeDeploys) {
         edgeDeploys.forEach((uuids, deploy) -> {
-            RestTemplate restTemplate = new RestTemplate();
-            HttpEntity<Deploy> request = new HttpEntity<>(deploy);
+
+            deploy.getRules().stream().forEach(r -> r.setEpn(deploy.getEpn()));
+            deployRepository.save(deploy);
+            deploy.getRules().stream().forEach(r -> r.setEpn(null));
+
+            val restTemplate = new RestTemplate();
+            val request = new HttpEntity<>(deploy);
             restTemplate.exchange(deploy.getGateway().getUrl() + "/deploy-edge", HttpMethod.POST, request, new ParameterizedTypeReference<Deploy>() {});
         });
     }
 
     // encontra todos os gateways de acordo com as tags
     private List<Gateway> findGateways(String tagFilter) {
-        RestTemplate restTemplate = new RestTemplate();
-        HttpEntity<String> request = new HttpEntity<>(tagFilter);
-        ResponseEntity<List<Gateway>> response = restTemplate.exchange(iotCataloguerUrl + "iot-cataloguer/gateway/expression", HttpMethod.POST, request, new ParameterizedTypeReference<List<Gateway>>() {});
-        List<Gateway> gateways = response.getBody();
-        return gateways;
+        val restTemplate = new RestTemplate();
+        val request = new HttpEntity<>(tagFilter);
+        val response = restTemplate.exchange(iotCataloguerUrl + "iot-cataloguer/gateway/expression", HttpMethod.POST, request, new ParameterizedTypeReference<List<Gateway>>() {});
+        return response.getBody();
     }
 
     // encontra todos os resources (edges) de acordo com as tags
     private List<Resource> findResources(String tagFilter) {
-        RestTemplate restTemplate = new RestTemplate();
-        HttpEntity<String> request = new HttpEntity<>(tagFilter);
-        ResponseEntity<List<Resource>> response = restTemplate.exchange(iotCataloguerUrl + "iot-cataloguer/resource/expression", HttpMethod.POST, request, new ParameterizedTypeReference<List<Resource>>() {});
-        List<Resource> resources = response.getBody();
-        return resources;
+        val restTemplate = new RestTemplate();
+        val request = new HttpEntity<>(tagFilter);
+        val response = restTemplate.exchange(iotCataloguerUrl + "iot-cataloguer/resource/expression", HttpMethod.POST, request, new ParameterizedTypeReference<List<Resource>>() {});
+        return response.getBody();
     }
 
 }
