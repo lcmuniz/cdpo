@@ -4,7 +4,6 @@ import br.ufma.lsdi.tagger.entities.TaggedObject;
 import br.ufma.lsdi.tagger.entities.TaggedObjectFilter;
 import br.ufma.lsdi.tagger.repos.TaggedObjectRepository;
 import lombok.val;
-import lombok.var;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;

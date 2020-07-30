@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="1be17a78-f526-49fa-94fe-c6be06a4208a" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/../basic-edge-node/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-edge-node/.mvn/wrapper/MavenWrapperDownloader.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-edge-node/.mvn/wrapper/maven-wrapper.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-edge-node/.mvn/wrapper/maven-wrapper.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-edge-node/mvnw" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-edge-node/mvnw.cmd" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-edge-node/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-edge-node/src/main/java/br/ufma/lsdi/basicedgenode/BasicEdgeNodeApplication.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-edge-node/src/main/java/br/ufma/lsdi/basicedgenode/controls/IndexController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-edge-node/src/main/java/br/ufma/lsdi/basicedgenode/models/Deploy.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-edge-node/src/main/java/br/ufma/lsdi/basicedgenode/models/Epn.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-edge-node/src/main/java/br/ufma/lsdi/basicedgenode/models/EventType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-edge-node/src/main/java/br/ufma/lsdi/basicedgenode/models/EventTypeAttribute.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-edge-node/src/main/java/br/ufma/lsdi/basicedgenode/models/Gateway.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-edge-node/src/main/java/br/ufma/lsdi/basicedgenode/models/GatewayResource.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-edge-node/src/main/java/br/ufma/lsdi/basicedgenode/models/Level.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-edge-node/src/main/java/br/ufma/lsdi/basicedgenode/models/ObjectType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-edge-node/src/main/java/br/ufma/lsdi/basicedgenode/models/QoS.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-edge-node/src/main/java/br/ufma/lsdi/basicedgenode/models/Resource.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-edge-node/src/main/java/br/ufma/lsdi/basicedgenode/models/Rule.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-edge-node/src/main/java/br/ufma/lsdi/basicedgenode/models/TaggedObject.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-edge-node/src/main/java/br/ufma/lsdi/basicedgenode/models/TaggedObjectFilter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-edge-node/src/main/java/br/ufma/lsdi/basicedgenode/services/CdpoEdgeService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-edge-node/src/main/java/br/ufma/lsdi/basicedgenode/services/CepService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-edge-node/src/main/java/br/ufma/lsdi/basicedgenode/services/TemperatureSensorService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-edge-node/src/main/resources/application.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-edge-node/src/test/java/br/ufma/lsdi/basicedgenode/BasicEdgeNodeApplicationTests.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-fog-node/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-fog-node/.mvn/wrapper/MavenWrapperDownloader.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-fog-node/.mvn/wrapper/maven-wrapper.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-fog-node/.mvn/wrapper/maven-wrapper.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-fog-node/mvnw" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-fog-node/mvnw.cmd" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-fog-node/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-fog-node/src/main/java/br/ufma/lsdi/basicfognode/BasicFogNodeApplication.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-fog-node/src/main/java/br/ufma/lsdi/basicfognode/controls/CdpoFogController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-fog-node/src/main/java/br/ufma/lsdi/basicfognode/controls/IndexController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-fog-node/src/main/java/br/ufma/lsdi/basicfognode/models/Deploy.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-fog-node/src/main/java/br/ufma/lsdi/basicfognode/models/Epn.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-fog-node/src/main/java/br/ufma/lsdi/basicfognode/models/EventType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-fog-node/src/main/java/br/ufma/lsdi/basicfognode/models/EventTypeAttribute.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-fog-node/src/main/java/br/ufma/lsdi/basicfognode/models/Gateway.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-fog-node/src/main/java/br/ufma/lsdi/basicfognode/models/GatewayResource.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-fog-node/src/main/java/br/ufma/lsdi/basicfognode/models/Level.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-fog-node/src/main/java/br/ufma/lsdi/basicfognode/models/ObjectType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-fog-node/src/main/java/br/ufma/lsdi/basicfognode/models/QoS.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-fog-node/src/main/java/br/ufma/lsdi/basicfognode/models/Resource.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-fog-node/src/main/java/br/ufma/lsdi/basicfognode/models/Rule.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-fog-node/src/main/java/br/ufma/lsdi/basicfognode/models/TaggedObject.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-fog-node/src/main/java/br/ufma/lsdi/basicfognode/models/TaggedObjectFilter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-fog-node/src/main/java/br/ufma/lsdi/basicfognode/services/BasicFogNodeService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-fog-node/src/main/java/br/ufma/lsdi/basicfognode/services/CdpoFogService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-fog-node/src/main/java/br/ufma/lsdi/basicfognode/services/CepService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-fog-node/src/main/resources/application.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../basic-fog-node/src/test/java/br/ufma/lsdi/basicfognode/BasicFogNodeApplicationTests.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cdpo/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cdpo/.mvn/wrapper/MavenWrapperDownloader.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cdpo/.mvn/wrapper/maven-wrapper.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cdpo/.mvn/wrapper/maven-wrapper.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cdpo/mvnw" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cdpo/mvnw.cmd" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cdpo/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/CdpoApplication.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/controls/EpnController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/controls/IndexController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/entities/Deploy.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/entities/Epn.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/entities/EventType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/entities/EventTypeAttribute.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/entities/Gateway.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/entities/GatewayResource.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/entities/Level.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/entities/ObjectType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/entities/QoS.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/entities/Resource.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/entities/Rule.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/entities/TaggedObject.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/entities/TaggedObjectFilter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/repos/DeployRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/repos/EpnRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/repos/EventTypeAttributeRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/repos/EventTypeRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/repos/RuleRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/services/DeployService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cdpo/src/main/java/br/ufma/lsdi/cdpo/services/EpnService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cdpo/src/main/resources/application.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cdpo/src/test/java/br/ufma/lsdi/cdpo/CdpoApplicationTests.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../iot-cataloguer/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../iot-cataloguer/.mvn/wrapper/MavenWrapperDownloader.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../iot-cataloguer/.mvn/wrapper/maven-wrapper.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../iot-cataloguer/.mvn/wrapper/maven-wrapper.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../iot-cataloguer/mvnw" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../iot-cataloguer/mvnw.cmd" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../iot-cataloguer/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../iot-cataloguer/src/main/java/br/ufma/lsdi/iotcataloguer/IoTCataloguerApplication.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../iot-cataloguer/src/main/java/br/ufma/lsdi/iotcataloguer/controls/GatewayController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../iot-cataloguer/src/main/java/br/ufma/lsdi/iotcataloguer/controls/IndexController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../iot-cataloguer/src/main/java/br/ufma/lsdi/iotcataloguer/controls/ResourceController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../iot-cataloguer/src/main/java/br/ufma/lsdi/iotcataloguer/entities/Gateway.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../iot-cataloguer/src/main/java/br/ufma/lsdi/iotcataloguer/entities/GatewayResource.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../iot-cataloguer/src/main/java/br/ufma/lsdi/iotcataloguer/entities/ObjectType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../iot-cataloguer/src/main/java/br/ufma/lsdi/iotcataloguer/entities/Resource.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../iot-cataloguer/src/main/java/br/ufma/lsdi/iotcataloguer/entities/TaggedObject.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../iot-cataloguer/src/main/java/br/ufma/lsdi/iotcataloguer/entities/TaggedObjectFilter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../iot-cataloguer/src/main/java/br/ufma/lsdi/iotcataloguer/repos/GatewayRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../iot-cataloguer/src/main/java/br/ufma/lsdi/iotcataloguer/repos/GatewayResourceRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../iot-cataloguer/src/main/java/br/ufma/lsdi/iotcataloguer/repos/ResourceRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../iot-cataloguer/src/main/java/br/ufma/lsdi/iotcataloguer/services/ResourceService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../iot-cataloguer/src/main/resources/application.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../iot-cataloguer/src/test/java/br/ufma/lsdi/iotcataloguer/IoTCataloguerApplicationTests.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../tagger/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../tagger/.mvn/wrapper/MavenWrapperDownloader.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../tagger/.mvn/wrapper/maven-wrapper.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../tagger/.mvn/wrapper/maven-wrapper.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../tagger/mvnw" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../tagger/mvnw.cmd" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../tagger/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../tagger/src/main/java/br/ufma/lsdi/tagger/TaggerApplication.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../tagger/src/main/java/br/ufma/lsdi/tagger/controls/IndexController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../tagger/src/main/java/br/ufma/lsdi/tagger/controls/ObjectTypeController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../tagger/src/main/java/br/ufma/lsdi/tagger/controls/TaggedObjectController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../tagger/src/main/java/br/ufma/lsdi/tagger/entities/ObjectType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../tagger/src/main/java/br/ufma/lsdi/tagger/entities/TaggedObject.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../tagger/src/main/java/br/ufma/lsdi/tagger/entities/TaggedObjectFilter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../tagger/src/main/java/br/ufma/lsdi/tagger/repos/ObjectTypeRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../tagger/src/main/java/br/ufma/lsdi/tagger/repos/TaggedObjectRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../tagger/src/main/java/br/ufma/lsdi/tagger/services/TaggedObjectService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../tagger/src/main/resources/application.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../tagger/src/test/java/br/ufma/lsdi/tagger/TaggerApplicationTests.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="$APPLICATION_HOME_DIR$/plugins/maven/lib/maven3" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="1f2jBd2QYmcd31aNTaZM5KRpzm9" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="dart.analysis.tool.window.visible" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/main/resources" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="project.structure.last.edited" value="Artifacts" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.37421778" />
+    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
+    <property name="show.migrate.to.gradle.popup" value="false" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/resources" />
+    </key>
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="br.ufma.lsdi.cdpo" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="1be17a78-f526-49fa-94fe-c6be06a4208a" name="Default Changelist" comment="" />
+      <created>1595422946597</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1595422946597</updated>
+      <workItem from="1595422949660" duration="9525000" />
+      <workItem from="1595532761732" duration="2762000" />
+      <workItem from="1596060440560" duration="1371000" />
+      <workItem from="1596062057716" duration="8000" />
+      <workItem from="1596076314101" duration="3084000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="466" y="120" width="424" height="494" key="FileChooserDialogImpl" timestamp="1595435407843">
+      <screen x="0" y="0" width="1366" height="725" />
+    </state>
+    <state x="466" y="120" width="424" height="494" key="FileChooserDialogImpl/0.0.1366.725@0.0.1366.725" timestamp="1595435407843" />
+    <state x="166" y="0" width="1024" height="725" key="SettingsEditor" timestamp="1595424114039">
+      <screen x="0" y="0" width="1366" height="725" />
+    </state>
+    <state x="166" y="0" width="1024" height="725" key="SettingsEditor/0.0.1366.725@0.0.1366.725" timestamp="1595424114039" />
+  </component>
+</project>

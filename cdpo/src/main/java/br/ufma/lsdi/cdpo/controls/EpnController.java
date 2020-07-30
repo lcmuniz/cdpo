@@ -53,11 +53,23 @@ public class EpnController {
 
         epnService.save(epn);
         deployEpn(epn);
+
+        // remove, nas colecoes one-to-many, os uuids dos pais
+        // para que a resposta json não tenha referência circular
+        // isso é feito aqui e não no Entity porque em outros casos
+        // pode ser que se queira essa referência.
         epn = removeUuids(epn);
 
         return epn;
     }
 
+
+    /*
+    Este método remove nos filhos os uuids referentes aos pais em um relacionamento
+    one-to-many. Ex: Epn tem várias Rules. Rule tem o atributo epn. Esse método seta
+    nulo epn. Isso é feito para casos de uso que precisem retornar as coleções de modo
+    que não aja uma referẽncia circular.
+     */
     private Epn removeUuids(Epn epn) {
         epn.getRules().forEach(r -> {
             r.setEpn(null);

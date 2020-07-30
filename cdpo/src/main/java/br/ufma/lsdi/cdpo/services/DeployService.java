@@ -107,8 +107,13 @@ public class DeployService {
     private void deploy2FogNodes(Map<String, Deploy> fogDeploys) {
         fogDeploys.forEach((uuids, deploy) -> {
 
+            // antes de salvar, insere os uuids da epn em cada regra
             deploy.getRules().stream().forEach(r -> r.setEpn(deploy.getEpn()));
+
             deployRepository.save(deploy);
+
+            // após salvar, remove para que a resposta json não tenha o campo
+            // e não cause stack overflow por referência circular
             deploy.getRules().stream().forEach(r -> r.setEpn(null));
 
             val restTemplate = new RestTemplate();
@@ -121,8 +126,13 @@ public class DeployService {
     private void deploy2EdgeNodes(Map<String, Deploy> edgeDeploys) {
         edgeDeploys.forEach((uuids, deploy) -> {
 
+            // antes de salvar, insere os uuids da epn em cada regra
             deploy.getRules().stream().forEach(r -> r.setEpn(deploy.getEpn()));
+
             deployRepository.save(deploy);
+
+            // após salvar, remove para que a resposta json não tenha o campo
+            // e não cause stack overflow por referência circular
             deploy.getRules().stream().forEach(r -> r.setEpn(null));
 
             val restTemplate = new RestTemplate();

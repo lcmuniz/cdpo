@@ -39,6 +39,10 @@ public class EpnService {
         return epnRepository.save(_epn);
     }
 
+    /*
+    Este método serve para preencher todos os uuids dos filhos das coleções e os
+    pais de cada filho de modo a permitir o salvamento correto no banco de dados.
+     */
     private Epn fillUuids(Epn epn) {
         val _epn = epn;
         if (_epn.getUuid() == null) _epn.setUuid(UUID.randomUUID().toString());
