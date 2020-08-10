@@ -55,6 +55,7 @@ public class CdpoFogController {
     /*
     Envia as regras para um resource
     */
+
     private void sendRulesToEdge(Resource resource, List<Rule> rules) {
         cdpoFogService.sendRuleToEdge(resource, rules);
     }

@@ -1,0 +1,137 @@
+-------------------------------------------------------------------------------
+Test set: worker.DatabaseAccess.LettuceTest
+-------------------------------------------------------------------------------
+Tests run: 19, Failures: 0, Errors: 19, Skipped: 0, Time elapsed: 0.761 sec <<< FAILURE! - in worker.DatabaseAccess.LettuceTest
+testEventTypeCurrentWorker(worker.DatabaseAccess.LettuceTest)  Time elapsed: 0.079 sec  <<< ERROR!
+java.lang.RuntimeException: Can't start redis server. Check logs for details.
+	at redis.embedded.AbstractRedisInstance.awaitRedisServerReady(AbstractRedisInstance.java:61)
+	at redis.embedded.AbstractRedisInstance.start(AbstractRedisInstance.java:39)
+	at redis.embedded.RedisServer.start(RedisServer.java:9)
+	at worker.DatabaseAccess.LettuceTest.testEventTypeCurrentWorker(LettuceTest.java:137)
+
+testgetEventTypeInputs(worker.DatabaseAccess.LettuceTest)  Time elapsed: 0.053 sec  <<< ERROR!
+java.lang.RuntimeException: Can't start redis server. Check logs for details.
+	at redis.embedded.AbstractRedisInstance.awaitRedisServerReady(AbstractRedisInstance.java:61)
+	at redis.embedded.AbstractRedisInstance.start(AbstractRedisInstance.java:39)
+	at redis.embedded.RedisServer.start(RedisServer.java:9)
+	at worker.DatabaseAccess.LettuceTest.testgetEventTypeInputs(LettuceTest.java:156)
+
+testeventTypeStateBuilded(worker.DatabaseAccess.LettuceTest)  Time elapsed: 0.052 sec  <<< ERROR!
+java.lang.RuntimeException: Can't start redis server. Check logs for details.
+	at redis.embedded.AbstractRedisInstance.awaitRedisServerReady(AbstractRedisInstance.java:61)
+	at redis.embedded.AbstractRedisInstance.start(AbstractRedisInstance.java:39)
+	at redis.embedded.RedisServer.start(RedisServer.java:9)
+	at worker.DatabaseAccess.LettuceTest.testeventTypeStateBuilded(LettuceTest.java:178)
+
+testeventTypeStateBuildedAdd(worker.DatabaseAccess.LettuceTest)  Time elapsed: 0.048 sec  <<< ERROR!
+java.lang.RuntimeException: Can't start redis server. Check logs for details.
+	at redis.embedded.AbstractRedisInstance.awaitRedisServerReady(AbstractRedisInstance.java:61)
+	at redis.embedded.AbstractRedisInstance.start(AbstractRedisInstance.java:39)
+	at redis.embedded.RedisServer.start(RedisServer.java:9)
+	at worker.DatabaseAccess.LettuceTest.testeventTypeStateBuildedAdd(LettuceTest.java:200)
+
+testeventTypeStateBuildedDel(worker.DatabaseAccess.LettuceTest)  Time elapsed: 0.042 sec  <<< ERROR!
+java.lang.RuntimeException: Can't start redis server. Check logs for details.
+	at redis.embedded.AbstractRedisInstance.awaitRedisServerReady(AbstractRedisInstance.java:61)
+	at redis.embedded.AbstractRedisInstance.start(AbstractRedisInstance.java:39)
+	at redis.embedded.RedisServer.start(RedisServer.java:9)
+	at worker.DatabaseAccess.LettuceTest.testeventTypeStateBuildedDel(LettuceTest.java:220)
+
+testeventTypeAssigned(worker.DatabaseAccess.LettuceTest)  Time elapsed: 0.033 sec  <<< ERROR!
+java.lang.RuntimeException: Can't start redis server. Check logs for details.
+	at redis.embedded.AbstractRedisInstance.awaitRedisServerReady(AbstractRedisInstance.java:61)
+	at redis.embedded.AbstractRedisInstance.start(AbstractRedisInstance.java:39)
+	at redis.embedded.RedisServer.start(RedisServer.java:9)
+	at worker.DatabaseAccess.LettuceTest.testeventTypeAssigned(LettuceTest.java:241)
+
+testgetUnnasignedEventTypes(worker.DatabaseAccess.LettuceTest)  Time elapsed: 0.041 sec  <<< ERROR!
+java.lang.RuntimeException: Can't start redis server. Check logs for details.
+	at redis.embedded.AbstractRedisInstance.awaitRedisServerReady(AbstractRedisInstance.java:61)
+	at redis.embedded.AbstractRedisInstance.start(AbstractRedisInstance.java:39)
+	at redis.embedded.RedisServer.start(RedisServer.java:9)
+	at worker.DatabaseAccess.LettuceTest.testgetUnnasignedEventTypes(LettuceTest.java:269)
+
+testgetUnnasignedEventType(worker.DatabaseAccess.LettuceTest)  Time elapsed: 0.034 sec  <<< ERROR!
+java.lang.RuntimeException: Can't start redis server. Check logs for details.
+	at redis.embedded.AbstractRedisInstance.awaitRedisServerReady(AbstractRedisInstance.java:61)
+	at redis.embedded.AbstractRedisInstance.start(AbstractRedisInstance.java:39)
+	at redis.embedded.RedisServer.start(RedisServer.java:9)
+	at worker.DatabaseAccess.LettuceTest.testgetUnnasignedEventType(LettuceTest.java:294)
+
+testhasEventTypeBeenPickedUpForRellocation(worker.DatabaseAccess.LettuceTest)  Time elapsed: 0.03 sec  <<< ERROR!
+java.lang.RuntimeException: Can't start redis server. Check logs for details.
+	at redis.embedded.AbstractRedisInstance.awaitRedisServerReady(AbstractRedisInstance.java:61)
+	at redis.embedded.AbstractRedisInstance.start(AbstractRedisInstance.java:39)
+	at redis.embedded.RedisServer.start(RedisServer.java:9)
+	at worker.DatabaseAccess.LettuceTest.testhasEventTypeBeenPickedUpForRellocation(LettuceTest.java:316)
+
+testpushEventTypeForRellocation(worker.DatabaseAccess.LettuceTest)  Time elapsed: 0.029 sec  <<< ERROR!
+java.lang.RuntimeException: Can't start redis server. Check logs for details.
+	at redis.embedded.AbstractRedisInstance.awaitRedisServerReady(AbstractRedisInstance.java:61)
+	at redis.embedded.AbstractRedisInstance.start(AbstractRedisInstance.java:39)
+	at redis.embedded.RedisServer.start(RedisServer.java:9)
+	at worker.DatabaseAccess.LettuceTest.testpushEventTypeForRellocation(LettuceTest.java:338)
+
+testgetEventTypeReceivingWorker(worker.DatabaseAccess.LettuceTest)  Time elapsed: 0.029 sec  <<< ERROR!
+java.lang.RuntimeException: Can't start redis server. Check logs for details.
+	at redis.embedded.AbstractRedisInstance.awaitRedisServerReady(AbstractRedisInstance.java:61)
+	at redis.embedded.AbstractRedisInstance.start(AbstractRedisInstance.java:39)
+	at redis.embedded.RedisServer.start(RedisServer.java:9)
+	at worker.DatabaseAccess.LettuceTest.testgetEventTypeReceivingWorker(LettuceTest.java:357)
+
+testsetEventTypeReceveingWorker(worker.DatabaseAccess.LettuceTest)  Time elapsed: 0.031 sec  <<< ERROR!
+java.lang.RuntimeException: Can't start redis server. Check logs for details.
+	at redis.embedded.AbstractRedisInstance.awaitRedisServerReady(AbstractRedisInstance.java:61)
+	at redis.embedded.AbstractRedisInstance.start(AbstractRedisInstance.java:39)
+	at redis.embedded.RedisServer.start(RedisServer.java:9)
+	at worker.DatabaseAccess.LettuceTest.testsetEventTypeReceveingWorker(LettuceTest.java:378)
+
+testremoveEventTypeReceveingWorker(worker.DatabaseAccess.LettuceTest)  Time elapsed: 0.029 sec  <<< ERROR!
+java.lang.RuntimeException: Can't start redis server. Check logs for details.
+	at redis.embedded.AbstractRedisInstance.awaitRedisServerReady(AbstractRedisInstance.java:61)
+	at redis.embedded.AbstractRedisInstance.start(AbstractRedisInstance.java:39)
+	at redis.embedded.RedisServer.start(RedisServer.java:9)
+	at worker.DatabaseAccess.LettuceTest.testremoveEventTypeReceveingWorker(LettuceTest.java:397)
+
+testGetEventTypeName(worker.DatabaseAccess.LettuceTest)  Time elapsed: 0.04 sec  <<< ERROR!
+java.lang.RuntimeException: Can't start redis server. Check logs for details.
+	at redis.embedded.AbstractRedisInstance.awaitRedisServerReady(AbstractRedisInstance.java:61)
+	at redis.embedded.AbstractRedisInstance.start(AbstractRedisInstance.java:39)
+	at redis.embedded.RedisServer.start(RedisServer.java:9)
+	at worker.DatabaseAccess.LettuceTest.testGetEventTypeName(LettuceTest.java:18)
+
+testGetEventTypeDefinition(worker.DatabaseAccess.LettuceTest)  Time elapsed: 0.042 sec  <<< ERROR!
+java.lang.RuntimeException: Can't start redis server. Check logs for details.
+	at redis.embedded.AbstractRedisInstance.awaitRedisServerReady(AbstractRedisInstance.java:61)
+	at redis.embedded.AbstractRedisInstance.start(AbstractRedisInstance.java:39)
+	at redis.embedded.RedisServer.start(RedisServer.java:9)
+	at worker.DatabaseAccess.LettuceTest.testGetEventTypeDefinition(LettuceTest.java:40)
+
+testGetAvroSchema(worker.DatabaseAccess.LettuceTest)  Time elapsed: 0.04 sec  <<< ERROR!
+java.lang.RuntimeException: Can't start redis server. Check logs for details.
+	at redis.embedded.AbstractRedisInstance.awaitRedisServerReady(AbstractRedisInstance.java:61)
+	at redis.embedded.AbstractRedisInstance.start(AbstractRedisInstance.java:39)
+	at redis.embedded.RedisServer.start(RedisServer.java:9)
+	at worker.DatabaseAccess.LettuceTest.testGetAvroSchema(LettuceTest.java:61)
+
+testSetAvroSchema(worker.DatabaseAccess.LettuceTest)  Time elapsed: 0.031 sec  <<< ERROR!
+java.lang.RuntimeException: Can't start redis server. Check logs for details.
+	at redis.embedded.AbstractRedisInstance.awaitRedisServerReady(AbstractRedisInstance.java:61)
+	at redis.embedded.AbstractRedisInstance.start(AbstractRedisInstance.java:39)
+	at redis.embedded.RedisServer.start(RedisServer.java:9)
+	at worker.DatabaseAccess.LettuceTest.testSetAvroSchema(LettuceTest.java:82)
+
+testGetEventTypeCurrentWorker(worker.DatabaseAccess.LettuceTest)  Time elapsed: 0.032 sec  <<< ERROR!
+java.lang.RuntimeException: Can't start redis server. Check logs for details.
+	at redis.embedded.AbstractRedisInstance.awaitRedisServerReady(AbstractRedisInstance.java:61)
+	at redis.embedded.AbstractRedisInstance.start(AbstractRedisInstance.java:39)
+	at redis.embedded.RedisServer.start(RedisServer.java:9)
+	at worker.DatabaseAccess.LettuceTest.testGetEventTypeCurrentWorker(LettuceTest.java:97)
+
+testSetEventTypeCurrentWorker(worker.DatabaseAccess.LettuceTest)  Time elapsed: 0.038 sec  <<< ERROR!
+java.lang.RuntimeException: Can't start redis server. Check logs for details.
+	at redis.embedded.AbstractRedisInstance.awaitRedisServerReady(AbstractRedisInstance.java:61)
+	at redis.embedded.AbstractRedisInstance.start(AbstractRedisInstance.java:39)
+	at redis.embedded.RedisServer.start(RedisServer.java:9)
+	at worker.DatabaseAccess.LettuceTest.testSetEventTypeCurrentWorker(LettuceTest.java:118)
+

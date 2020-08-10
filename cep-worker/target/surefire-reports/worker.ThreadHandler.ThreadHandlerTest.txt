@@ -1,0 +1,11 @@
+-------------------------------------------------------------------------------
+Test set: worker.ThreadHandler.ThreadHandlerTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.028 sec <<< FAILURE! - in worker.ThreadHandler.ThreadHandlerTest
+testdummy(worker.ThreadHandler.ThreadHandlerTest)  Time elapsed: 0.028 sec  <<< ERROR!
+java.lang.RuntimeException: Can't start redis server. Check logs for details.
+	at redis.embedded.AbstractRedisInstance.awaitRedisServerReady(AbstractRedisInstance.java:61)
+	at redis.embedded.AbstractRedisInstance.start(AbstractRedisInstance.java:39)
+	at redis.embedded.RedisServer.start(RedisServer.java:9)
+	at worker.ThreadHandler.ThreadHandlerTest.testdummy(ThreadHandlerTest.java:28)
+

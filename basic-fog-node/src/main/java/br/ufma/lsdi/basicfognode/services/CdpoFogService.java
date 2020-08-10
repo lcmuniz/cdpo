@@ -201,8 +201,8 @@ public class CdpoFogService {
                 new Thread(() -> {
                     val event = (Map) eventBeans[0].getUnderlying();
                     val restTemplate = new RestTemplate();
-                    val topic = cdpoComposerUrl + CDPO_COMPOSER_PUBLISH_EVENT + rule.getUuid();
-                    restTemplate.postForObject(topic, event, Map.class);
+                    val url = cdpoComposerUrl + "/cdpo/publishNewCdpoEvent/" + rule.getUuid();
+                    restTemplate.postForObject(url, event, String.class);
                 }).start();
             });
         }

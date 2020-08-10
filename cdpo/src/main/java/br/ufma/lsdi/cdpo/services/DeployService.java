@@ -3,6 +3,8 @@ package br.ufma.lsdi.cdpo.services;
 import br.ufma.lsdi.cdpo.entities.*;
 import br.ufma.lsdi.cdpo.repos.DeployRepository;
 import lombok.val;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /*
 Classe de serviço com métodos para realizar o deploy da epn na rede.
@@ -21,7 +24,14 @@ public class DeployService {
     @Value("${cdpo.iotcataloguer.url}")
     private String iotCataloguerUrl;
 
+    @Value("${cdpo.composer.url}")
+    String cdpoComposerUrl;
+
     private DeployRepository deployRepository;
+
+    RestTemplate restTemplate = new RestTemplate();
+
+    Logger logger = LoggerFactory.getLogger(DeployService.class);
 
     public DeployService(DeployRepository deployRepository) {
         this.deployRepository = deployRepository;
@@ -37,11 +47,21 @@ public class DeployService {
             // lista de deploys para edges
             Map<String, Deploy> edgeDeploys = new HashMap<>();
 
+            // Gera uuid quando não existir
+            epn.getRules().stream()
+                .filter(rule -> rule.getUuid()==null)
+                .forEach(rule -> rule.setUuid(UUID.randomUUID().toString()));
+
+            // Map com as regras da fog name -> uuid
+            Map<String, String> fogRuleUuid =
+                    epn.getRules().stream()
+                                .filter(rule -> rule.getLevel().equals(Level.FOG))
+                                .collect(Collectors.toMap(Rule::getName,Rule::getUuid));
             // para cada regra...
             epn.getRules().forEach(rule -> {
 
                 // seta o uuid da regra
-                if (rule.getUuid() == null) rule.setUuid(UUID.randomUUID().toString());
+ //               if (rule.getUuid() == null) rule.setUuid(UUID.randomUUID().toString());
 
                 if (rule.getLevel().equals(Level.EDGE)) {
                     // acha os edges
@@ -93,7 +113,21 @@ public class DeployService {
                         fogDeploys.get(gateway.getUuid()).getRules().add(rule);
                     });
                 } else if (rule.getLevel().equals(Level.CLOUD)) {
+                    val cloudInputUuids = registerEventTypesOnCloud(rule, fogRuleUuid);
 
+                    val cloudRule = new HashMap<String, Object>();
+                    cloudRule.put("uuid", rule.getUuid());
+                    cloudRule.put("name", rule.getName());
+                    cloudRule.put("definition", rule.getDefinition());
+                    cloudRule.put("description", rule.getDescription());
+                    cloudRule.put("level", rule.getLevel());
+                    cloudRule.put("qos", rule.getQos().toString());
+                    cloudRule.put("tagfilter", rule.getTagFilter());
+                    cloudRule.put("target", rule.getTarget());
+                    cloudRule.put("inputs", cloudInputUuids);
+
+                    String url = cdpoComposerUrl + "/cdpo/registerNewCdpoRules";
+                    restTemplate.postForObject(url, cloudRule, Map.class);
                 }
 
             });
@@ -101,6 +135,33 @@ public class DeployService {
             deploy2FogNodes(fogDeploys);
             deploy2EdgeNodes(edgeDeploys);
 
+    }
+
+    // Informa a Cloud que Tipos de Eventos esperar da Fog
+    private List<String> registerEventTypesOnCloud(Rule rule, Map<String, String> fogRuleUuid) {
+        List<String> uuids = new ArrayList<>();
+
+        rule.getEventTypes().forEach(eventType -> {
+            //TODO evitar registro duplicado
+            if(fogRuleUuid.containsKey(eventType.getName())) {
+                eventType.setUuid(fogRuleUuid.get(eventType.getName()));
+                Map<String, Object> inputSpec = new HashMap<>();
+                inputSpec.put("uuid", eventType.getUuid());
+                inputSpec.put("name", eventType.getName());
+                inputSpec.put("eventSpec", eventType.getAttributes().stream()
+                                                    .collect(Collectors.toMap(EventTypeAttribute::getName, EventTypeAttribute::getType))
+                );
+
+                String url = cdpoComposerUrl + "/cdpo/registerNewCdpoEvent";
+                restTemplate.postForObject(url, inputSpec, Map.class);
+
+                uuids.add(eventType.getUuid());
+            }
+            else
+                logger.warn("EventType {} foi informado para regra {} mas não existe regra que o gere", eventType.getName(), rule.getName());
+
+        });
+        return  uuids;
     }
 
     // faz o deloy enviando para cada gateway suas regras

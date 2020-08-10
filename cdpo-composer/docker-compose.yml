@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  redis:
+    container_name: redis-cep-cataloger
+    image: 'redis:alpine'
+  cep-cataloger:
+    container_name: cep-cataloger
+    depends_on:
+      - 'redis'
+    build: .
+    ports:
+      - 8090:8090
+    volumes:
+      - '.:/cep-cataloger'
+    command: bash -c "java -jar target/cep-cataloger-1.0-SNAPSHOT.jar redis-event-composer"
+    environment:
+      RABBITMQ_HOST: '192.168.10.59'
+      KONG_URI: 'http://kong:8001'
+      SELF_HOST: 'cep-cataloger:8080'
+      REGISTER_METHOD: 'target'
+      REDIS_HOST: "redis-event-composer"
+      REDIS_PORT: 6379
+      REDIS_COMPOSER_HOST: "redis-event-composer"
+
+networks:
+  default:
+    external:
+      name: platform 

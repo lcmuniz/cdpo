@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  redis-cep:
+    container_name: redis-cep
+    image: redis:alpine
+  rabbitmq-cep:
+    container_name: rabbitmq-cep
+    image: rabbitmq:alpine
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    environment:
+      RABBITMQ_DEFAULT_USER: worker1
+      RABBITMQ_DEFAULT_PASS: 12345
+  cep-worker:
+    container_name: cep-worker
+    build: .
+    volumes:
+      - '.:/usr/src/cep-worker'
+    command: "java -jar target/CEPWorker-0.7.jar 12345 mono"
+    depends_on:
+      - rabbitmq-cep
+      - redis-cep
+    environment:
+      INSTANCE: mono
+  
+networks:
+  default:
+    external:
+      name: platform 
