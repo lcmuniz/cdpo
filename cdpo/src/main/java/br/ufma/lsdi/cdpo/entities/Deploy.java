@@ -15,7 +15,7 @@ public class Deploy {
     @Id
     private String uuid;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Gateway gateway;
 
     @ManyToOne(fetch = FetchType.LAZY)

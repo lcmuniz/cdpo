@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: cep-handler:cep-event-lib:0.0.4-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/cep-handler/cep-event-lib/0.0.4-SNAPSHOT/cep-event-lib-0.0.4-20191115.234053-1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/cep-handler/cep-event-lib/0.0.4-SNAPSHOT/cep-event-lib-0.0.4-20191115.234053-1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/cep-handler/cep-event-lib/0.0.4-SNAPSHOT/cep-event-lib-0.0.4-20191115.234053-1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

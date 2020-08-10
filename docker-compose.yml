@@ -1,0 +1,223 @@
+version: "3"
+services:
+##### 1 - Servicos Acessorios
+  ### 1.1 - Banco de Dados - Postgres
+  postgres:
+    image: postgres:12.3
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    expose:
+      - 5432
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_USER=postgres
+    restart: unless-stopped
+  ### 1.2 - Broker MQTT - Mosquitto
+  mosquitto:
+    image: eclipse-mosquitto
+    container_name: mosquitto
+    expose:
+      - 1883
+    ports:
+      - 1883:1883
+
+  ### 1.3 - RabbitMQ
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3.6.5
+    command: bash -c "rabbitmq-plugins enable rabbitmq_management && rabbitmq-server"
+    ports:
+      - 5672:5672
+      - 15672:15672
+
+  ### 1.4 - Redis
+  redis:
+    container_name: redis
+    image: redis:alpine
+    ports:
+      - 6379:6379
+
+  ### 1.4 -
+
+##### 2 - Servicos do CDPO
+  ### 2.1 - Tagger
+  tagger:
+    build: tagger/
+    container_name: tagger
+    expose:
+      - 8080
+    ports:
+      - 8180:8080
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/tagger
+      - TAGGER_PROVIDER-URL_RESOURCE=http://api.playgound.interscity.org/catalog/resources/
+      - TAGGER_PROVIDER-URL_FOG-NODE=http://iotcataloguer:8080/iot-cataloguer/gateway/
+      - TAGGER_PROVIDER-URL_EDGE-NODE=http://iotcataloguer:8080/iot-cataloguer/resource/
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - SERVER_PORT=8080
+    restart: unless-stopped
+    links:
+      - postgres
+    depends_on:
+      - postgres
+  ### 2.2 - IoT Cataloguer
+  iotcataloguer:
+    build: iot-cataloguer/
+    container_name: iotcataloguer
+    expose:
+      - 8080
+    ports:
+      - 8280:8080
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/iotcataloguer
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - SERVER_PORT=8080
+      - IOTCATALOGUER_DNATTRIBUTE=X-SSL-Client-DN
+      - CDPO_TAGGER_URL=http://tagger:8080
+    restart: unless-stopped
+    links:
+      - postgres
+    depends_on:
+      - postgres
+
+  ### 2.3 - CDPO
+  cdpo:
+    build: cdpo/
+    container_name: cdpo
+    expose:
+      - 8080
+    ports:
+      - 8080:8080
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/cdpo
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - SERVER_PORT=8080
+      - CDPO_IOTCATALOGUER_URL=http://iotcataloguer:8080/
+      - CDPO_COMPOSER_URL=http://cdpo-composer:8010
+    restart: unless-stopped
+    links:
+      - postgres
+      - iotcataloguer
+    depends_on:
+      - postgres
+
+##### 3 - Estudo de Caso
+  ### 3.1 - Fog Node
+  fognode:
+    build: basic-fog-node/
+    container_name: fognode
+    expose:
+      - 8080
+    ports:
+      - 8380:8080
+    environment:
+      - CDPO_MQTTBROKER_URL=tcp://mosquitto:1883
+      - CDPO_URL=httṕ://cdpo:8080
+      - CDPO_IOTCATALOGUER_URL=http://iotcataloguer:8080/
+      - CDPO_FOG_DN=CN=fognode1;OU=lsdi;O=ufma;L=SAO LUIS;C=BR
+      - CDPO_FOGNODE_URL=http://fognode:8080
+      - SERVER_PORT=8080
+      - CDPO_COMPOSER_URL=http://cdpo-composer:8010/
+    restart: unless-stopped
+    links:
+      - mosquitto
+      - iotcataloguer
+    depends_on:
+      - mosquitto
+      - iotcataloguer
+
+  ### 3.2 - Edge Nodes
+  edgenode1:
+    build: combed-edge-node/
+    container_name: edgenode
+    expose:
+      - 8080
+    ports:
+      - 8480:8080
+    volumes:
+      - ./combed/iiitd/Academic_Block/AHU/0/Power.csv:/Power.csv
+    environment:
+      - CDPO_MQTTBROKER_URL=tcp://mosquitto:1883
+      - CDPO_URL=httṕ://cdpo:8080
+      - SERVER_PORT=8080
+      - CDPO_EDGE_CLIENTUUID=a3fdd37b-4389-4d48-ab09-3a0e42d61e55
+      - CDPO_EDGE_NAME=AHU_Terreo
+      - COMBED.POWER.FILE=/Power.csv
+    restart: unless-stopped
+    links:
+      - mosquitto
+    depends_on:
+      - mosquitto
+
+  edgenode2:
+    build: combed-edge-node/
+    container_name: combednode2
+    expose:
+      - 8080
+    ports:
+      - 8580:8080
+    volumes:
+      - ./combed/iiitd/Academic_Block/AHU/1/Power.csv:/Power.csv
+    environment:
+      - CDPO_MQTTBROKER_URL=tcp://mosquitto:1883
+      - CDPO_URL=httṕ://cdpo:8080
+      - SERVER_PORT=8080
+      - CDPO_EDGE_CLIENTUUID=b2393b4a-d739-11ea-87d0-0242ac130003
+      - CDPO_EDGE_NAME=AHU_1_Andar
+      - COMBED.POWER.FILE=/Power.csv
+    restart: unless-stopped
+    links:
+      - mosquitto
+    depends_on:
+      - mosquitto
+
+##### 4 - CEP Handler Services
+  ### 4.1 - CDPO Composer (Em andamento)
+  cdpo-composer:
+    container_name: cdpo-composer
+    ports:
+      - 8010:8010
+    depends_on:
+      - redis
+      - rabbitmq
+    build: cdpo-composer/
+    command: bash -c "java -jar target/cdpo-composer-1.0-SNAPSHOT.jar"
+    restart: unless-stopped
+    environment:
+      CEPHANDLER_RABBITMQ_HOST: 'rabbitmq'
+      CEPHANDLER_RABBITMQ_USERNAME: 'guest'
+      CEPHANDLER_RABBITMQ_PASSWORD: 'guest'
+      EXCHANGE_NAME: 'EXCHANGE'
+      REDIS_COMPOSER_HOST: 'redis'
+      REDIS_WORKER_HOST: 'redis'
+
+  ### 4.2 - CEP Worker (Em andamento)
+  cep-worker:
+    container_name: cep-worker
+    build: ./cep-worker/
+    #    volumes:
+    #      - './cep-worker:/usr/src/cep-worker'
+    command: "java -jar target/cep-worker-1.0.jar 12345 mono"
+    depends_on:
+      - rabbitmq
+      - redis
+    environment:
+      INSTANCE: mono
+      REDIS_CEP_HOST: redis
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USERNAME: 'guest'
+      RABBITMQ_PASSWORD: 'guest'
+
+
+
+
+
+#### EXTRA: Volumes
+volumes:
+  postgres-data:
